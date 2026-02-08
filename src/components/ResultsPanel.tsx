@@ -29,7 +29,7 @@ export const ResultsPanel = ({
     <div className={`${cardBase} results-panel results-shell flex min-h-0 flex-1 flex-col p-3`}>
       <div className="results-header flex items-center justify-between">
         <h2 className="results-title text-sm font-semibold uppercase tracking-[0.1em]">
-          Results
+          Explore
         </h2>
         <span className="results-count text-xs uppercase tracking-[0.1em] text-[var(--page-ink-muted)]">
           Showing {entries.length} of {totalCount}
