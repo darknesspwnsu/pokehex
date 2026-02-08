@@ -49,18 +49,18 @@ body {
   font-family: 'Space Grotesk', system-ui, sans-serif;
   color: var(--ink);
   background-color: var(--bg);
-  background-image:
-    radial-gradient(circle at top, rgba(249, 226, 180, 0.5), transparent 55%),
-    radial-gradient(circle at 20% 20%, rgba(14, 165, 233, 0.18), transparent 45%),
-    linear-gradient(120deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0));
-  background-attachment: fixed;
 }
 
-.dark body {
+.app-shell {
+  min-height: 100%;
+  background-color: var(--page-a, var(--bg));
   background-image:
-    radial-gradient(circle at top, rgba(30, 41, 59, 0.8), transparent 55%),
-    radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.18), transparent 45%),
-    linear-gradient(120deg, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0));
+    radial-gradient(circle at 15% 12%, var(--page-soft-a), transparent 55%),
+    radial-gradient(circle at 85% 12%, var(--page-soft-b), transparent 55%),
+    radial-gradient(circle at 30% 78%, var(--page-soft-c), transparent 60%),
+    linear-gradient(140deg, var(--page-a), var(--page-b) 55%, var(--page-c));
+  background-attachment: fixed;
+  position: relative;
 }
 
 body::before {
@@ -71,7 +71,8 @@ body::before {
     linear-gradient(to right, var(--grid) 1px, transparent 1px),
     linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
   background-size: 120px 120px;
-  opacity: 0.3;
+  opacity: 0.12;
+  mix-blend-mode: soft-light;
   pointer-events: none;
   z-index: 0;
 }
@@ -79,6 +80,7 @@ body::before {
 #root {
   position: relative;
   z-index: 1;
+  min-height: 100%;
 }
 
 a {

@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 
 import { applyFilters } from './lib/filters'
 import { hexToRgb, normalizeHex, relativeLuminance } from './lib/color'
@@ -61,13 +61,23 @@ const toggleValue = <T,>(value: T, list: T[]) =>
 
 const buildToast = (label: string) => `Copied ${label} to clipboard`
 
+const toRgba = (hex: string, alpha: number, fallback = 'rgba(0,0,0,0)') => {
+  const rgb = hexToRgb(hex)
+  if (!rgb) {
+    return fallback
+  }
+
+  return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${alpha})`
+}
+
 const buttonBase =
-  'rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/30'
+  'rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] transition duration-200 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[0_0_0_2px_var(--page-glow),0_18px_35px_rgba(0,0,0,0.18)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/40'
+const chipBase = `${buttonBase} px-3 py-2 text-[10px] tracking-[0.3em]`
 
 const cardBase =
-  'rounded-3xl border border-[var(--stroke)] bg-[var(--card)] shadow-glow'
+  'rounded-3xl border border-[var(--page-stroke)] bg-[var(--page-surface)] shadow-glow backdrop-blur'
 const panelCardBase =
-  'rounded-3xl border border-white/45 bg-white/80 p-7 shadow-sm backdrop-blur'
+  'rounded-3xl border border-[var(--panel-stroke)] bg-[var(--panel-card)] p-6 text-[var(--panel-ink)] shadow-sm backdrop-blur'
 
 function App() {
   const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('pokehex-theme', () => {
@@ -248,6 +258,55 @@ function App() {
     `linear-gradient(160deg, ${panelSwatchA} 0%, ${panelSwatchB} 55%, ${panelSwatchC} 100%)`
   const panelOverlay =
     'radial-gradient(circle at top, rgba(255,255,255,0.35), transparent 55%)'
+  const panelInk = dominantText
+  const panelInkMuted =
+    dominantText === '#0B0D11'
+      ? 'rgba(11,13,17,0.6)'
+      : 'rgba(248,247,242,0.72)'
+  const pageStroke =
+    dominantText === '#0B0D11'
+      ? 'rgba(11,13,17,0.18)'
+      : 'rgba(248,247,242,0.3)'
+  const pageSurface = toRgba(panelSwatchA, 0.14)
+  const pageSurfaceStrong = toRgba(panelSwatchB, 0.22)
+  const pageGlow = toRgba(panelSwatchB, 0.45)
+  const panelCard = toRgba(panelSwatchA, 0.2)
+  const panelCardStrong = toRgba(panelSwatchB, 0.3)
+  const panelChip = toRgba(panelSwatchA, 0.18)
+  const panelChipStrong = toRgba(panelSwatchB, 0.36)
+  const pageSoftA = toRgba(panelSwatchA, 0.45)
+  const pageSoftB = toRgba(panelSwatchB, 0.45)
+  const pageSoftC = toRgba(panelSwatchC, 0.4)
+  const pageStyle = {
+    '--page-a': panelSwatchA,
+    '--page-b': panelSwatchB,
+    '--page-c': panelSwatchC,
+    '--page-ink': dominantText,
+    '--page-ink-muted': panelInkMuted,
+    '--page-surface': pageSurface,
+    '--page-surface-strong': pageSurfaceStrong,
+    '--page-stroke': pageStroke,
+    '--page-glow': pageGlow,
+    '--page-soft-a': pageSoftA,
+    '--page-soft-b': pageSoftB,
+    '--page-soft-c': pageSoftC,
+  } as CSSProperties
+  const panelStyle = {
+    backgroundImage: `${panelOverlay}, ${panelBackground}`,
+    '--panel-ink': panelInk,
+    '--panel-ink-muted': panelInkMuted,
+    '--panel-card': panelCard,
+    '--panel-card-strong': panelCardStrong,
+    '--panel-chip': panelChip,
+    '--panel-chip-strong': panelChipStrong,
+    '--panel-stroke': pageStroke,
+  } as CSSProperties
+  const chipStyle = (active: boolean, base: string) => ({
+    backgroundColor: active ? base : toRgba(base, 0.18),
+    color: active ? getContrastColor(base) : panelInk,
+    borderColor: active ? toRgba(base, 0.6) : toRgba(base, 0.35),
+    boxShadow: active ? `0 12px 24px ${toRgba(base, 0.35)}` : undefined,
+  })
 
   const totalPopulation = activeSwatches.reduce(
     (sum, swatch) => sum + swatch.population,
@@ -275,67 +334,70 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen px-6 pb-16 pt-10 sm:px-10">
-      <header className="mx-auto flex max-w-6xl flex-row items-center justify-between gap-6 layout-header">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="space-y-3"
-        >
-          <p className="text-xs uppercase tracking-[0.35em] text-[var(--ink-muted)]">
-            Poke Hexcolor
-          </p>
-          <h1 className="font-display text-4xl leading-tight sm:text-5xl">
-            Official-art palettes for every Pokemon form.
-          </h1>
-          <p className="max-w-xl text-sm text-[var(--ink-muted)] sm:text-base">
-            Search by name, number, or nearest color match to reveal dominant
-            swatches. Filter by generation, type, and form, then export clean
-            palette snippets.
-          </p>
-        </motion.div>
-        <div className="flex items-center gap-3">
-          <button
-            className={`${buttonBase} border-[var(--stroke)] bg-[var(--card)] text-[var(--ink)] shadow-glow`}
-            onClick={() =>
-              setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))
-            }
+    <div className="app-shell min-h-screen px-6 pb-16 pt-10 sm:px-10" style={pageStyle}>
+      <header className="mx-auto flex max-w-7xl flex-col gap-6 rounded-[32px] border border-[var(--page-stroke)] bg-[var(--page-surface)] p-6 shadow-float backdrop-blur layout-header">
+        <div className="flex flex-wrap items-center justify-between gap-6">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+            className="space-y-3"
           >
-            {theme === 'light' ? 'Light Mode' : 'Dark Mode'}
-          </button>
-          <a
-            className={`${buttonBase} border-transparent bg-[var(--ink)] text-[var(--bg)] shadow-glow`}
-            href="https://github.com/pokehex/pokehex.github.io"
-            target="_blank"
-            rel="noreferrer"
-          >
-            GitHub
-          </a>
+            <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.4em] text-[var(--page-ink-muted)]">
+              <span>Poke Hexcolor</span>
+              <span className="rounded-full border border-[var(--page-stroke)] bg-[var(--page-surface-strong)] px-3 py-1 text-[10px] tracking-[0.35em] text-[var(--page-ink)]">
+                Gen 1-9
+              </span>
+            </div>
+            <h1 className="font-display text-4xl leading-tight text-[var(--page-ink)] sm:text-5xl">
+              Official-art palettes for every Pokemon form.
+            </h1>
+            <p className="max-w-2xl text-sm text-[var(--page-ink-muted)] sm:text-base">
+              Search by name, number, or nearest color match to reveal dominant
+              swatches. Filter by generation, type, and form, then export clean
+              palette snippets.
+            </p>
+          </motion.div>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              className={`${buttonBase} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)]`}
+              onClick={() =>
+                setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))
+              }
+            >
+              {theme === 'light' ? 'Light Mode' : 'Dark Mode'}
+            </button>
+            <a
+              className={`${buttonBase} border-transparent bg-[var(--page-ink)] text-[var(--page-a)]`}
+              href="https://github.com/pokehex/pokehex.github.io"
+              target="_blank"
+              rel="noreferrer"
+            >
+              GitHub
+            </a>
+          </div>
         </div>
       </header>
 
-      <main className="mx-auto mt-10 max-w-6xl">
-        <div className="grid grid-cols-[320px_1fr] gap-10 layout-shell">
+      <main className="mx-auto mt-8 max-w-7xl">
+        <div className="grid grid-cols-[340px_1fr] gap-8 layout-shell">
           <aside
-            className="space-y-6 rounded-[32px] border border-white/40 p-6 shadow-float"
-            style={{
-              backgroundImage: `${panelOverlay}, ${panelBackground}`,
-            }}
+            className="space-y-7 rounded-[32px] border border-[var(--panel-stroke)] p-6 shadow-float backdrop-blur"
+            style={panelStyle}
           >
-            <div className={panelCardBase}>
-              <p className="text-xs uppercase tracking-[0.35em] text-[var(--ink-muted)]">
+            <div className={`${panelCardBase} space-y-3`}>
+              <p className="text-xs uppercase tracking-[0.35em] text-[var(--panel-ink-muted)]">
                 Selected Pokemon
               </p>
-              <h2 className="mt-2 font-display text-3xl">
+              <h2 className="font-display text-3xl">
                 {activeEntry?.displayName ?? 'Loading...'}
               </h2>
-              <div className="mt-2 text-xs uppercase tracking-[0.25em] text-[var(--ink-muted)]">
+              <div className="text-xs uppercase tracking-[0.25em] text-[var(--panel-ink-muted)]">
                 {activeEntry
                   ? `#${formatDex(activeEntry.speciesId)} · Gen ${activeEntry.generation}`
                   : 'Fetching data'}
               </div>
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-3">
                 {activeEntry?.types.map((type) => (
                   <span
                     key={`${activeEntry.name}-${type}`}
@@ -351,43 +413,37 @@ function App() {
               </div>
             </div>
 
-            <div className={panelCardBase}>
-              <div className="flex flex-wrap gap-2">
+            <div className={`${panelCardBase} space-y-4`}>
+              <div className="flex flex-wrap gap-3">
                 <button
-                  className={`${buttonBase} ${
-                    searchMode === 'name'
-                      ? 'border-[var(--ink)] bg-[var(--ink)] text-[var(--bg)]'
-                      : 'border-white/50 bg-white/70 text-[var(--ink-muted)]'
-                  }`}
+                  className={chipBase}
+                  style={chipStyle(searchMode === 'name', panelSwatchB)}
                   onClick={() => setSearchMode('name')}
                 >
                   Name / Number
                 </button>
                 <button
-                  className={`${buttonBase} ${
-                    searchMode === 'color'
-                      ? 'border-[var(--ink)] bg-[var(--ink)] text-[var(--bg)]'
-                      : 'border-white/50 bg-white/70 text-[var(--ink-muted)]'
-                  }`}
+                  className={chipBase}
+                  style={chipStyle(searchMode === 'color', panelSwatchB)}
                   onClick={() => setSearchMode('color')}
                 >
                   Color Match
                 </button>
               </div>
 
-              <div className="mt-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ink-muted)]">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--panel-ink-muted)]">
                   Search
                 </p>
                 {searchMode === 'name' ? (
                   <input
-                    className="mt-3 w-full rounded-2xl border border-white/60 bg-white/90 px-4 py-3.5 text-sm text-[var(--ink)] shadow-md outline-none placeholder:text-[var(--ink-muted)] focus:border-[var(--ink)] focus:ring-2 focus:ring-[var(--accent)]/25"
+                    className="mt-3 w-full rounded-2xl border border-[var(--panel-stroke)] bg-[var(--panel-card-strong)] px-4 py-3.5 text-sm text-[var(--panel-ink)] shadow-[0_16px_35px_rgba(0,0,0,0.12)] outline-none placeholder:text-[var(--panel-ink-muted)] focus:border-[var(--panel-ink)] focus:ring-2 focus:ring-[var(--page-glow)]/40"
                     placeholder="Search by name or Pokedex number"
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
                   />
                 ) : (
-                  <div className="mt-3 flex items-center gap-3 rounded-2xl border border-white/60 bg-white/90 px-4 py-3.5 shadow-md">
+                  <div className="mt-3 flex items-center gap-3 rounded-2xl border border-[var(--panel-stroke)] bg-[var(--panel-card-strong)] px-4 py-3.5 shadow-[0_16px_35px_rgba(0,0,0,0.12)]">
                     <input
                       aria-label="Pick a color"
                       type="color"
@@ -398,7 +454,7 @@ function App() {
                       className="h-10 w-10 cursor-pointer rounded-full border-none bg-transparent"
                     />
                     <input
-                      className="w-full bg-transparent text-sm uppercase tracking-[0.2em] text-[var(--ink)] outline-none placeholder:text-[var(--ink-muted)]"
+                      className="w-full bg-transparent text-sm uppercase tracking-[0.2em] text-[var(--panel-ink)] outline-none placeholder:text-[var(--panel-ink-muted)]"
                       value={colorQuery}
                       onChange={(event) =>
                         setColorQuery(event.target.value.toUpperCase())
@@ -424,46 +480,42 @@ function App() {
                 )}
               </div>
 
-              <div className="mt-5 flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-3">
                 <button
-                  className={`${buttonBase} border-white/50 bg-white/80 text-[var(--ink)]`}
+                  className={chipBase}
+                  style={chipStyle(true, panelSwatchC)}
                   onClick={handleSurprise}
                 >
                   Surprise me
                 </button>
                 <button
-                  className={`${buttonBase} ${
-                    paletteMode === 'normal'
-                      ? 'border-[var(--ink)] bg-[var(--ink)] text-[var(--bg)]'
-                      : 'border-white/50 bg-white/70 text-[var(--ink-muted)]'
-                  }`}
+                  className={chipBase}
+                  style={chipStyle(paletteMode === 'normal', panelSwatchB)}
                   onClick={() => setPaletteMode('normal')}
                 >
                   Normal
                 </button>
                 <button
-                  className={`${buttonBase} ${
-                    paletteMode === 'shiny'
-                      ? 'border-[var(--ink)] bg-[var(--ink)] text-[var(--bg)]'
-                      : 'border-white/50 bg-white/70 text-[var(--ink-muted)]'
-                  }`}
+                  className={chipBase}
+                  style={chipStyle(paletteMode === 'shiny', panelSwatchC)}
                   onClick={() => setPaletteMode('shiny')}
                 >
                   Shiny
                 </button>
-                <span className="text-xs uppercase tracking-[0.2em] text-[var(--ink-muted)]">
+                <span className="text-xs uppercase tracking-[0.2em] text-[var(--panel-ink-muted)]">
                   {filteredEntries.length} results
                 </span>
               </div>
             </div>
 
-            <div className={panelCardBase}>
+            <div className={`${panelCardBase} space-y-4`}>
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold uppercase tracking-[0.2em]">
                   Filters
                 </h3>
                 <button
-                  className="text-xs uppercase tracking-[0.2em] text-[var(--ink-muted)]"
+                  className={chipBase}
+                  style={chipStyle(false, panelSwatchA)}
                   onClick={() => {
                     setSelectedTypes([])
                     setSelectedGenerations([])
@@ -474,20 +526,17 @@ function App() {
                 </button>
               </div>
 
-              <div className="mt-4 space-y-4">
+              <div className="space-y-5">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ink-muted)]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--panel-ink-muted)]">
                     Generation
                   </p>
-                  <div className="mt-2 flex flex-wrap gap-2">
+                  <div className="mt-2 flex flex-wrap gap-3">
                     {generationOptions.map((gen) => (
                       <button
                         key={`gen-${gen}`}
-                        className={`${buttonBase} px-3 py-1 ${
-                          selectedGenerations.includes(gen)
-                            ? 'border-[var(--ink)] bg-[var(--ink)] text-[var(--bg)]'
-                            : 'border-[var(--stroke)] bg-[var(--card)] text-[var(--ink-muted)]'
-                        }`}
+                        className={chipBase}
+                        style={chipStyle(selectedGenerations.includes(gen), panelSwatchB)}
                         onClick={() =>
                           setSelectedGenerations((prev) =>
                             toggleValue(gen, prev),
@@ -501,23 +550,30 @@ function App() {
                 </div>
 
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ink-muted)]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--panel-ink-muted)]">
                     Type
                   </p>
-                  <div className="mt-2 flex flex-wrap gap-2">
+                  <div className="mt-2 flex flex-wrap gap-3">
                     {typeOptions.map((type) => {
                       const isActive = selectedTypes.includes(type)
                       const color = TYPE_COLORS[type] ?? '#64748B'
                       return (
                         <button
                           key={type}
-                          className={`${buttonBase} px-3 py-1`}
+                          className={chipBase}
                           style={{
-                            borderColor: isActive ? color : 'var(--stroke)',
-                            backgroundColor: isActive ? color : 'transparent',
+                            borderColor: isActive
+                              ? toRgba(color, 0.7)
+                              : toRgba(color, 0.35),
+                            backgroundColor: isActive
+                              ? color
+                              : toRgba(color, 0.18),
                             color: isActive
                               ? getContrastColor(color)
-                              : 'var(--ink-muted)',
+                              : panelInk,
+                            boxShadow: isActive
+                              ? `0 12px 24px ${toRgba(color, 0.35)}`
+                              : undefined,
                           }}
                           onClick={() =>
                             setSelectedTypes((prev) => toggleValue(type, prev))
@@ -531,18 +587,15 @@ function App() {
                 </div>
 
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ink-muted)]">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--panel-ink-muted)]">
                     Forms
                   </p>
-                  <div className="mt-2 flex flex-wrap gap-2">
+                  <div className="mt-2 flex flex-wrap gap-3">
                     {FORM_FILTERS.map((form) => (
                       <button
                         key={form.id}
-                        className={`${buttonBase} px-3 py-1 ${
-                          selectedForms.includes(form.id)
-                            ? 'border-[var(--ink)] bg-[var(--ink)] text-[var(--bg)]'
-                            : 'border-[var(--stroke)] bg-[var(--card)] text-[var(--ink-muted)]'
-                        }`}
+                        className={chipBase}
+                        style={chipStyle(selectedForms.includes(form.id), panelSwatchA)}
                         onClick={() =>
                           setSelectedForms((prev) => toggleValue(form.id, prev))
                         }
@@ -555,20 +608,20 @@ function App() {
               </div>
             </div>
 
-            <div className={panelCardBase}>
+            <div className={`${panelCardBase} space-y-3`}>
               <h3 className="text-sm font-semibold uppercase tracking-[0.2em]">
                 Palette History
               </h3>
               {historyEntries.length === 0 ? (
-                <p className="mt-3 text-sm text-[var(--ink-muted)]">
+                <p className="text-sm text-[var(--panel-ink-muted)]">
                   Pick a Pokemon to start building a quick-access strip.
                 </p>
               ) : (
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-3">
                   {historyEntries.map((entry) => (
                     <button
                       key={`history-${entry.name}`}
-                      className="flex items-center gap-2 rounded-full border border-[var(--stroke)] bg-[var(--bg-muted)] px-3 py-2 text-xs font-semibold"
+                      className="flex items-center gap-2 rounded-full border border-[var(--panel-stroke)] bg-[var(--panel-chip)] px-3 py-2 text-xs font-semibold text-[var(--panel-ink)] transition hover:-translate-y-0.5 hover:shadow-[0_0_0_2px_var(--page-glow),0_12px_20px_rgba(0,0,0,0.15)]"
                       onClick={() => setSelectedName(entry.name)}
                     >
                       <span className="flex gap-1">
@@ -590,7 +643,7 @@ function App() {
 
           <section className="space-y-6">
             {loading ? (
-              <div className="rounded-3xl border border-dashed border-[var(--stroke)] bg-[var(--bg-muted)] p-10 text-center text-sm text-[var(--ink-muted)]">
+              <div className="rounded-3xl border border-dashed border-[var(--page-stroke)] bg-[var(--page-surface)] p-10 text-center text-sm text-[var(--page-ink-muted)]">
                 Loading Poke Hexcolor data...
               </div>
             ) : error ? (
@@ -604,7 +657,7 @@ function App() {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4 }}
-                  className="rounded-[32px] border border-[var(--stroke)] p-8 shadow-float"
+                  className="rounded-[36px] border border-[var(--page-stroke)] p-8 shadow-float"
                   style={{
                     backgroundColor: dominantHex,
                     color: dominantText,
@@ -637,13 +690,25 @@ function App() {
                           </span>
                         ))}
                       </div>
-                      <div className="mt-4 inline-flex items-center gap-3 rounded-full border border-black/10 bg-white/30 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em]">
+                      <div
+                        className="mt-4 inline-flex items-center gap-3 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em]"
+                        style={{
+                          backgroundColor: toRgba(dominantText, 0.18),
+                          borderColor: toRgba(dominantText, 0.25),
+                        }}
+                      >
                         <span>{dominantHex}</span>
                         <span style={{ color: dominantMuted }}>dominant</span>
                       </div>
                     </div>
                     <div className="flex items-center justify-center">
-                      <div className="rounded-[32px] border border-white/30 bg-white/20 p-6">
+                      <div
+                        className="rounded-[32px] border p-6"
+                        style={{
+                          borderColor: toRgba(dominantText, 0.35),
+                          backgroundColor: toRgba(dominantText, 0.12),
+                        }}
+                      >
                         {activeEntry.images[paletteMode] ? (
                           <img
                             src={activeEntry.images[paletteMode]}
@@ -687,13 +752,13 @@ function App() {
                   })}
                 </div>
 
-                <div className={`${cardBase} p-5`}>
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ink-muted)]">
+                <div className={`${cardBase} p-6`}>
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--page-ink-muted)]">
                     Export Palette
                   </p>
                   <div className="mt-3 grid gap-2 sm:grid-cols-2">
                     <button
-                      className={`${buttonBase} border-[var(--stroke)] bg-[var(--card)] text-[var(--ink)]`}
+                      className={`${buttonBase} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)]`}
                       onClick={() =>
                         handleCopy('hex list', toHexList(activeEntry, paletteMode))
                       }
@@ -701,7 +766,7 @@ function App() {
                       Copy HEX
                     </button>
                     <button
-                      className={`${buttonBase} border-[var(--stroke)] bg-[var(--card)] text-[var(--ink)]`}
+                      className={`${buttonBase} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)]`}
                       onClick={() =>
                         handleCopy(
                           'CSS variables',
@@ -712,7 +777,7 @@ function App() {
                       Copy CSS
                     </button>
                     <button
-                      className={`${buttonBase} border-[var(--stroke)] bg-[var(--card)] text-[var(--ink)]`}
+                      className={`${buttonBase} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)]`}
                       onClick={() =>
                         handleCopy(
                           'JSON',
@@ -723,7 +788,7 @@ function App() {
                       Copy JSON
                     </button>
                     <button
-                      className={`${buttonBase} border-[var(--stroke)] bg-[var(--card)] text-[var(--ink)]`}
+                      className={`${buttonBase} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)]`}
                       onClick={() =>
                         handleCopy('badge HTML', toBadgeHtml(activeEntry, paletteMode))
                       }
@@ -740,7 +805,7 @@ function App() {
                 <h2 className="text-sm font-semibold uppercase tracking-[0.2em]">
                   Results
                 </h2>
-                <span className="text-xs uppercase tracking-[0.2em] text-[var(--ink-muted)]">
+                <span className="text-xs uppercase tracking-[0.2em] text-[var(--page-ink-muted)]">
                   Showing {visibleEntries.length} of {filteredEntries.length}
                 </span>
               </div>
@@ -749,21 +814,37 @@ function App() {
                 {visibleEntries.map((entry) => {
                   const isActive = entry.name === activeEntry?.name
                   const swatches = entry.palettes[paletteMode].swatches
+                  const cardSwatchA = swatches[0]?.hex ?? dominantHex
+                  const cardSwatchB = swatches[1]?.hex ?? cardSwatchA
+                  const cardSwatchC = swatches[2]?.hex ?? cardSwatchB
+                  const cardText = getContrastColor(cardSwatchA)
+                  const cardMuted =
+                    cardText === '#0B0D11'
+                      ? 'rgba(11,13,17,0.6)'
+                      : 'rgba(248,247,242,0.75)'
+                  const cardStyle = {
+                    backgroundImage: `linear-gradient(140deg, ${toRgba(cardSwatchA, 0.95)} 0%, ${toRgba(cardSwatchB, 0.88)} 55%, ${toRgba(cardSwatchC, 0.85)} 100%)`,
+                    borderColor: toRgba(cardSwatchA, 0.6),
+                    color: cardText,
+                    boxShadow: isActive
+                      ? `0 0 0 2px ${toRgba(cardSwatchA, 0.7)}, 0 20px 40px ${toRgba(cardSwatchB, 0.35)}`
+                      : undefined,
+                  }
 
                   return (
                     <motion.button
                       key={entry.name}
                       layout
                       whileHover={{ y: -4 }}
-                      className={`rounded-3xl border px-4 py-4 text-left shadow-glow transition ${
-                        isActive
-                          ? 'border-[var(--ink)] bg-[var(--bg-muted)]'
-                          : 'border-[var(--stroke)] bg-[var(--card)]'
-                      }`}
+                      className="rounded-3xl border px-4 py-4 text-left shadow-glow transition"
+                      style={cardStyle}
                       onClick={() => setSelectedName(entry.name)}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="h-14 w-14 overflow-hidden rounded-2xl bg-[var(--bg-muted)]">
+                        <div
+                          className="h-14 w-14 overflow-hidden rounded-2xl border border-white/30"
+                          style={{ backgroundColor: toRgba(cardSwatchA, 0.2) }}
+                        >
                           {entry.images[paletteMode] ? (
                             <img
                               src={entry.images[paletteMode]}
@@ -772,7 +853,7 @@ function App() {
                               loading="lazy"
                             />
                           ) : (
-                            <div className="flex h-full w-full items-center justify-center text-[10px] text-[var(--ink-muted)]">
+                            <div className="flex h-full w-full items-center justify-center text-[10px]" style={{ color: cardMuted }}>
                               No art
                             </div>
                           )}
@@ -781,7 +862,7 @@ function App() {
                           <p className="text-sm font-semibold">
                             {entry.displayName}
                           </p>
-                          <p className="text-xs uppercase tracking-[0.2em] text-[var(--ink-muted)]">
+                          <p className="text-xs uppercase tracking-[0.2em]" style={{ color: cardMuted }}>
                             #{formatDex(entry.speciesId)}
                           </p>
                         </div>
@@ -803,7 +884,7 @@ function App() {
               {visibleEntries.length < filteredEntries.length && (
                 <div className="mt-6 flex justify-center">
                   <button
-                    className={`${buttonBase} border-[var(--stroke)] bg-[var(--card)] text-[var(--ink)]`}
+                    className={`${buttonBase} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)]`}
                     onClick={() => setResultsLimit((prev) => prev + 60)}
                   >
                     Load more
@@ -815,7 +896,7 @@ function App() {
         </div>
       </main>
 
-      <footer className="mx-auto mt-12 max-w-6xl text-xs uppercase tracking-[0.3em] text-[var(--ink-muted)]">
+      <footer className="mx-auto mt-12 max-w-7xl text-xs uppercase tracking-[0.3em] text-[var(--page-ink-muted)]">
         © {new Date().getFullYear()} Poke Hexcolor. All Pokemon artwork and
         trademarks belong to their respective owners.
       </footer>
@@ -826,7 +907,7 @@ function App() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 12 }}
-            className="fixed bottom-6 right-6 rounded-full border border-[var(--stroke)] bg-[var(--card)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] shadow-glow"
+            className="fixed bottom-6 right-6 rounded-full border border-[var(--page-stroke)] bg-[var(--page-surface-strong)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--page-ink)] shadow-glow"
           >
             {toast}
           </motion.div>
