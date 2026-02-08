@@ -44,11 +44,11 @@ export const ResultCard = ({
 
   return (
     <motion.button
-      layout
       whileHover={{ y: -4 }}
       className="result-card result-card-button group relative flex items-center gap-3 overflow-hidden rounded-md border text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--page-glow)]/60"
       style={cardStyle}
       onClick={() => onSelect(entry.name)}
+      aria-pressed={isActive}
     >
       <div className="result-card-taper" style={{ backgroundImage: taperOverlay }} />
       <div
