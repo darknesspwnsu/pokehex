@@ -57,7 +57,7 @@ body {
 }
 
 .hero-panel {
-  height: 50vh;
+  height: 40vh;
   padding: 16px;
 }
 
@@ -72,7 +72,7 @@ body {
 
 .search-field {
   background: #ffffff;
-  border: 2px solid rgba(0, 0, 0, 0.75);
+  border: none;
   border-radius: 999px;
   box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2), 0 18px 30px rgba(0, 0, 0, 0.18);
   min-height: 42px;
@@ -80,7 +80,7 @@ body {
 }
 
 .search-field:focus-within {
-  border-color: #000;
+  outline: 2px solid rgba(0, 0, 0, 0.55);
 }
 
 .swatch-button {
@@ -90,6 +90,15 @@ body {
 .result-card {
   height: 100px;
   padding: 0;
+}
+
+.results-scroll {
+  overflow-y: auto;
+  padding-right: 6px;
+  overscroll-behavior: contain;
+  min-height: 0;
+  flex: 1;
+  max-height: 100%;
 }
 
 .result-card-image {
@@ -111,6 +120,52 @@ body {
 
 .hero-content {
   height: 100%;
+}
+
+.main-shell {
+  width: 100%;
+}
+
+@media (min-width: 900px) {
+  body {
+    overflow: hidden;
+  }
+
+  .app-shell {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .main-shell {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .layout-shell {
+    height: 100%;
+    min-height: 0;
+    width: 100%;
+  }
+
+  .content-column {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .side-panel {
+    max-height: 100%;
+    overflow-y: auto;
+  }
+
+  .results-panel {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .results-scroll {
+    height: auto;
+  }
 }
 
 .app-shell {

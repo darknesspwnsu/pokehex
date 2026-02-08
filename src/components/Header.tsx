@@ -9,7 +9,7 @@ type HeaderProps = {
 
 export const Header = ({ theme, onToggleTheme }: HeaderProps) => {
   return (
-    <header className="site-header mx-auto flex max-w-7xl flex-col gap-5 rounded-none bg-[var(--page-surface-strong)] p-5 shadow-float backdrop-blur layout-header sm:p-6">
+    <header className="site-header flex w-full flex-col gap-5 rounded-none bg-[var(--page-surface-strong)] p-5 shadow-float backdrop-blur layout-header sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-6">
         <motion.div
           initial={{ opacity: 0, y: 16 }}

@@ -192,8 +192,6 @@ function App() {
   const panelSwatchC = activeSwatches[2]?.hex ?? panelSwatchB
   const panelBackground =
     `linear-gradient(160deg, ${panelSwatchA} 0%, ${panelSwatchB} 55%, ${panelSwatchC} 100%)`
-  const panelOverlay =
-    'radial-gradient(circle at top, rgba(255,255,255,0.35), transparent 55%)'
   const panelInk = dominantText
   const panelInkMuted =
     dominantText === '#0B0D11'
@@ -228,7 +226,8 @@ function App() {
     '--page-soft-c': pageSoftC,
   } as CSSProperties
   const panelStyle = {
-    backgroundImage: `${panelOverlay}, ${panelBackground}`,
+    backgroundColor: panelSwatchA,
+    backgroundImage: panelBackground,
     '--panel-ink': panelInk,
     '--panel-ink-muted': panelInkMuted,
     '--panel-card': panelCard,
@@ -266,14 +265,17 @@ function App() {
   }
 
   return (
-    <div className="app-shell app-root min-h-screen px-6 pb-16 pt-10 sm:px-10" style={pageStyle}>
+    <div
+      className="app-shell app-root flex min-h-screen flex-col gap-8 px-6 pb-16 pt-10 sm:px-10"
+      style={pageStyle}
+    >
       <Header
         theme={theme}
         onToggleTheme={() => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))}
       />
 
-      <main className="mx-auto mt-8 max-w-7xl">
-        <div className="grid grid-cols-[340px_1fr] gap-8 layout-shell">
+      <main className="main-shell flex min-h-0 w-full flex-1 px-0">
+        <div className="grid h-full min-h-0 grid-cols-[340px_1fr] gap-8 layout-shell">
           <SidePanel
             panelStyle={panelStyle}
             activeEntry={activeEntry}
@@ -321,7 +323,7 @@ function App() {
             onSelectName={setSelectedName}
           />
 
-          <section className="space-y-7">
+          <section className="content-column flex min-h-0 flex-1 flex-col gap-7">
             {loading ? (
               <div className="rounded-none bg-[var(--page-surface)] p-10 text-center text-sm text-[var(--page-ink-muted)] shadow-glow">
                 Loading Poke Hexcolor data...
@@ -367,7 +369,7 @@ function App() {
         </div>
       </main>
 
-      <footer className="mx-auto mt-12 max-w-7xl text-xs uppercase tracking-[0.3em] text-[var(--page-ink-muted)]">
+      <footer className="w-full text-xs uppercase tracking-[0.3em] text-[var(--page-ink-muted)]">
         © {new Date().getFullYear()} Poke Hexcolor. All Pokemon artwork and
         trademarks belong to their respective owners.
       </footer>

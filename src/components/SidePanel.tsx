@@ -123,7 +123,7 @@ export const SidePanel = ({
           {searchMode === 'name' ? (
             <div className={`${searchFieldBase} search-field`}>
               <input
-                className="flex-1 bg-transparent text-center text-base font-semibold tracking-[0.04em] text-black outline-none placeholder:text-black/40"
+                className="flex-1 border-none bg-transparent text-center text-base font-semibold tracking-[0.04em] text-black outline-none placeholder:text-black/40 focus:ring-0"
                 placeholder="Search by name or Pokedex number"
                 value={query}
                 onChange={(event) => onQueryChange(event.target.value)}
@@ -150,10 +150,10 @@ export const SidePanel = ({
                 type="color"
                 value={normalizedColor}
                 onChange={(event) => onColorChange(event.target.value.toUpperCase())}
-                className="h-10 w-10 cursor-pointer rounded-full border-none bg-transparent"
+                className="h-10 w-10 cursor-pointer rounded-full border-none bg-transparent focus:ring-0"
               />
               <input
-                className="flex-1 bg-transparent text-center text-base font-semibold uppercase tracking-[0.16em] text-black outline-none placeholder:text-black/40"
+                className="flex-1 border-none bg-transparent text-center text-base font-semibold uppercase tracking-[0.16em] text-black outline-none placeholder:text-black/40 focus:ring-0"
                 value={colorQuery}
                 onChange={(event) => onColorChange(event.target.value.toUpperCase())}
                 onBlur={onColorBlur}
