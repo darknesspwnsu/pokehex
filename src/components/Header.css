@@ -1,0 +1,71 @@
+.theme-toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 0 6px;
+  min-width: 72px;
+  height: 40px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.12);
+}
+
+.theme-toggle-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.35), transparent);
+  pointer-events: none;
+}
+
+.theme-toggle-icon {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.theme-toggle-sun {
+  color: rgba(249, 200, 48, 0.95);
+}
+
+.theme-toggle-moon {
+  color: rgba(15, 23, 42, 0.5);
+}
+
+.theme-toggle-knob {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--page-ink);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transition: transform 0.25s ease;
+  z-index: 1;
+}
+
+:root.dark .theme-toggle {
+  box-shadow: inset 0 0 0 1px rgba(248, 247, 242, 0.18);
+}
+
+:root.dark .theme-toggle-track {
+  background: linear-gradient(120deg, rgba(15, 17, 23, 0.6), transparent);
+}
+
+:root.dark .theme-toggle-knob {
+  transform: translateX(28px);
+}
+
+:root.dark .theme-toggle-sun {
+  color: rgba(248, 247, 242, 0.4);
+}
+
+:root.dark .theme-toggle-moon {
+  color: rgba(248, 247, 242, 0.9);
+}

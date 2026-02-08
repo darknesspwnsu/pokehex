@@ -1,0 +1,94 @@
+.app-shell {
+  min-height: 100%;
+  background-color: var(--page-a, var(--bg));
+  background-image:
+    radial-gradient(circle at 15% 12%, var(--page-soft-a), transparent 55%),
+    radial-gradient(circle at 85% 12%, var(--page-soft-b), transparent 55%),
+    radial-gradient(circle at 30% 78%, var(--page-soft-c), transparent 60%),
+    linear-gradient(140deg, var(--page-a), var(--page-b) 55%, var(--page-c));
+  background-attachment: fixed;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+  background-size: 180px 180px;
+  opacity: 0.04;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+  min-height: 100%;
+}
+
+.main-shell {
+  width: 100%;
+}
+
+@media (min-width: 900px) {
+  body {
+    overflow: hidden;
+  }
+
+  .app-shell {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .main-shell {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .layout-shell {
+    height: 100%;
+    min-height: 0;
+    width: 100%;
+  }
+
+  .content-column {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .side-panel {
+    max-height: 100%;
+    overflow-y: auto;
+  }
+
+  .results-panel {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .results-scroll {
+    height: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .layout-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  .layout-shell,
+  .layout-swatch {
+    grid-template-columns: 1fr !important;
+  }
+
+  .layout-hero {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+}
