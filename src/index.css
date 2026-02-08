@@ -70,8 +70,8 @@ body::before {
   background-image:
     linear-gradient(to right, var(--grid) 1px, transparent 1px),
     linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
-  background-size: 120px 120px;
-  opacity: 0.12;
+  background-size: 180px 180px;
+  opacity: 0.04;
   mix-blend-mode: soft-light;
   pointer-events: none;
   z-index: 0;

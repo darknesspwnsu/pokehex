@@ -71,13 +71,14 @@ const toRgba = (hex: string, alpha: number, fallback = 'rgba(0,0,0,0)') => {
 }
 
 const buttonBase =
-  'rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] transition duration-200 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[0_0_0_2px_var(--page-glow),0_18px_35px_rgba(0,0,0,0.18)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/40'
-const chipBase = `${buttonBase} px-3 py-2 text-[10px] tracking-[0.3em]`
+  'rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition duration-200 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[0_0_0_2px_var(--page-glow),0_16px_32px_rgba(0,0,0,0.22)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/45'
+const chipBase = `${buttonBase} px-3 py-2 text-[11px] tracking-[0.22em]`
+const actionButton = `${buttonBase} rounded-2xl px-4 py-3 text-[11px] tracking-[0.24em]`
 
 const cardBase =
-  'rounded-3xl border border-[var(--page-stroke)] bg-[var(--page-surface)] shadow-glow backdrop-blur'
+  'rounded-3xl bg-[var(--page-surface)] shadow-glow backdrop-blur'
 const panelCardBase =
-  'rounded-3xl border border-[var(--panel-stroke)] bg-[var(--panel-card)] p-6 text-[var(--panel-ink)] shadow-sm backdrop-blur'
+  'rounded-3xl bg-[var(--panel-card)] p-6 text-[var(--panel-ink)] shadow-sm backdrop-blur'
 
 function App() {
   const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('pokehex-theme', () => {
@@ -261,22 +262,22 @@ function App() {
   const panelInk = dominantText
   const panelInkMuted =
     dominantText === '#0B0D11'
-      ? 'rgba(11,13,17,0.6)'
-      : 'rgba(248,247,242,0.72)'
+      ? 'rgba(11,13,17,0.74)'
+      : 'rgba(248,247,242,0.86)'
   const pageStroke =
     dominantText === '#0B0D11'
       ? 'rgba(11,13,17,0.18)'
       : 'rgba(248,247,242,0.3)'
-  const pageSurface = toRgba(panelSwatchA, 0.14)
-  const pageSurfaceStrong = toRgba(panelSwatchB, 0.22)
+  const pageSurface = toRgba(panelSwatchA, 0.22)
+  const pageSurfaceStrong = toRgba(panelSwatchB, 0.32)
   const pageGlow = toRgba(panelSwatchB, 0.45)
-  const panelCard = toRgba(panelSwatchA, 0.2)
-  const panelCardStrong = toRgba(panelSwatchB, 0.3)
-  const panelChip = toRgba(panelSwatchA, 0.18)
-  const panelChipStrong = toRgba(panelSwatchB, 0.36)
-  const pageSoftA = toRgba(panelSwatchA, 0.45)
-  const pageSoftB = toRgba(panelSwatchB, 0.45)
-  const pageSoftC = toRgba(panelSwatchC, 0.4)
+  const panelCard = toRgba(panelSwatchA, 0.26)
+  const panelCardStrong = toRgba(panelSwatchB, 0.38)
+  const panelChip = toRgba(panelSwatchA, 0.24)
+  const panelChipStrong = toRgba(panelSwatchB, 0.4)
+  const pageSoftA = toRgba(panelSwatchA, 0.6)
+  const pageSoftB = toRgba(panelSwatchB, 0.58)
+  const pageSoftC = toRgba(panelSwatchC, 0.52)
   const pageStyle = {
     '--page-a': panelSwatchA,
     '--page-b': panelSwatchB,
@@ -302,9 +303,9 @@ function App() {
     '--panel-stroke': pageStroke,
   } as CSSProperties
   const chipStyle = (active: boolean, base: string) => ({
-    backgroundColor: active ? base : toRgba(base, 0.18),
+    backgroundColor: active ? base : toRgba(base, 0.28),
     color: active ? getContrastColor(base) : panelInk,
-    borderColor: active ? toRgba(base, 0.6) : toRgba(base, 0.35),
+    borderColor: active ? toRgba(base, 0.6) : toRgba(base, 0.45),
     boxShadow: active ? `0 12px 24px ${toRgba(base, 0.35)}` : undefined,
   })
 
@@ -335,7 +336,7 @@ function App() {
 
   return (
     <div className="app-shell min-h-screen px-6 pb-16 pt-10 sm:px-10" style={pageStyle}>
-      <header className="mx-auto flex max-w-7xl flex-col gap-6 rounded-[32px] border border-[var(--page-stroke)] bg-[var(--page-surface)] p-6 shadow-float backdrop-blur layout-header">
+      <header className="mx-auto flex max-w-7xl flex-col gap-5 rounded-[28px] bg-[var(--page-surface-strong)] p-5 shadow-float backdrop-blur layout-header sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-6">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -343,9 +344,9 @@ function App() {
             transition={{ duration: 0.6, ease: 'easeOut' }}
             className="space-y-3"
           >
-            <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.4em] text-[var(--page-ink-muted)]">
+            <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.32em] text-[var(--page-ink-muted)]">
               <span>Poke Hexcolor</span>
-              <span className="rounded-full border border-[var(--page-stroke)] bg-[var(--page-surface-strong)] px-3 py-1 text-[10px] tracking-[0.35em] text-[var(--page-ink)]">
+              <span className="rounded-full bg-[var(--page-surface)] px-3 py-1 text-[10px] tracking-[0.3em] text-[var(--page-ink)] shadow-[0_10px_20px_rgba(0,0,0,0.12)]">
                 Gen 1-9
               </span>
             </div>
@@ -382,7 +383,7 @@ function App() {
       <main className="mx-auto mt-8 max-w-7xl">
         <div className="grid grid-cols-[340px_1fr] gap-8 layout-shell">
           <aside
-            className="space-y-7 rounded-[32px] border border-[var(--panel-stroke)] p-6 shadow-float backdrop-blur"
+            className="space-y-8 rounded-[32px] p-6 shadow-float backdrop-blur"
             style={panelStyle}
           >
             <div className={`${panelCardBase} space-y-3`}>
@@ -437,13 +438,13 @@ function App() {
                 </p>
                 {searchMode === 'name' ? (
                   <input
-                    className="mt-3 w-full rounded-2xl border border-[var(--panel-stroke)] bg-[var(--panel-card-strong)] px-4 py-3.5 text-sm text-[var(--panel-ink)] shadow-[0_16px_35px_rgba(0,0,0,0.12)] outline-none placeholder:text-[var(--panel-ink-muted)] focus:border-[var(--panel-ink)] focus:ring-2 focus:ring-[var(--page-glow)]/40"
+                    className="mt-3 w-full rounded-2xl bg-[var(--panel-card-strong)] px-4 py-3.5 text-sm text-[var(--panel-ink)] shadow-[0_16px_35px_rgba(0,0,0,0.22)] outline-none placeholder:text-[var(--panel-ink-muted)] focus:ring-2 focus:ring-[var(--page-glow)]/50"
                     placeholder="Search by name or Pokedex number"
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
                   />
                 ) : (
-                  <div className="mt-3 flex items-center gap-3 rounded-2xl border border-[var(--panel-stroke)] bg-[var(--panel-card-strong)] px-4 py-3.5 shadow-[0_16px_35px_rgba(0,0,0,0.12)]">
+                  <div className="mt-3 flex items-center gap-3 rounded-2xl bg-[var(--panel-card-strong)] px-4 py-3.5 shadow-[0_16px_35px_rgba(0,0,0,0.22)]">
                     <input
                       aria-label="Pick a color"
                       type="color"
@@ -621,7 +622,7 @@ function App() {
                   {historyEntries.map((entry) => (
                     <button
                       key={`history-${entry.name}`}
-                      className="flex items-center gap-2 rounded-full border border-[var(--panel-stroke)] bg-[var(--panel-chip)] px-3 py-2 text-xs font-semibold text-[var(--panel-ink)] transition hover:-translate-y-0.5 hover:shadow-[0_0_0_2px_var(--page-glow),0_12px_20px_rgba(0,0,0,0.15)]"
+                      className="flex items-center gap-2 rounded-full bg-[var(--panel-chip)] px-3 py-2 text-xs font-semibold text-[var(--panel-ink)] shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_0_0_2px_var(--page-glow),0_12px_20px_rgba(0,0,0,0.2)]"
                       onClick={() => setSelectedName(entry.name)}
                     >
                       <span className="flex gap-1">
@@ -643,7 +644,7 @@ function App() {
 
           <section className="space-y-6">
             {loading ? (
-              <div className="rounded-3xl border border-dashed border-[var(--page-stroke)] bg-[var(--page-surface)] p-10 text-center text-sm text-[var(--page-ink-muted)]">
+              <div className="rounded-3xl bg-[var(--page-surface)] p-10 text-center text-sm text-[var(--page-ink-muted)] shadow-glow">
                 Loading Poke Hexcolor data...
               </div>
             ) : error ? (
@@ -657,7 +658,7 @@ function App() {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4 }}
-                  className="rounded-[36px] border border-[var(--page-stroke)] p-8 shadow-float"
+                  className="rounded-[36px] p-8 shadow-float"
                   style={{
                     backgroundColor: dominantHex,
                     color: dominantText,
@@ -691,7 +692,7 @@ function App() {
                         ))}
                       </div>
                       <div
-                        className="mt-4 inline-flex items-center gap-3 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em]"
+                        className="mt-4 inline-flex items-center gap-3 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em]"
                         style={{
                           backgroundColor: toRgba(dominantText, 0.18),
                           borderColor: toRgba(dominantText, 0.25),
@@ -703,9 +704,8 @@ function App() {
                     </div>
                     <div className="flex items-center justify-center">
                       <div
-                        className="rounded-[32px] border p-6"
+                        className="rounded-[32px] p-6 shadow-[0_24px_50px_rgba(0,0,0,0.22)]"
                         style={{
-                          borderColor: toRgba(dominantText, 0.35),
                           backgroundColor: toRgba(dominantText, 0.12),
                         }}
                       >
@@ -732,22 +732,48 @@ function App() {
                       ? Math.round((swatch.population / totalPopulation) * 100)
                       : 0
                     return (
-                      <div
+                      <button
                         key={`${activeEntry.name}-${swatch.hex}`}
-                        className="rounded-3xl px-5 py-4 shadow-glow"
+                        type="button"
+                        aria-label={`Copy ${swatch.hex}`}
+                        onClick={() => handleCopy('hex', swatch.hex)}
+                        className="group relative h-32 rounded-3xl px-5 py-4 text-left shadow-glow transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--page-glow)]/60"
                         style={{
                           backgroundColor: swatch.hex,
                           color: getContrastColor(swatch.hex),
                         }}
                       >
+                        <span
+                          className="absolute right-4 top-4 rounded-full bg-black/20 px-2 py-1 text-[10px] uppercase tracking-[0.2em] opacity-0 transition group-hover:opacity-100"
+                          style={{ color: getContrastColor(swatch.hex) }}
+                        >
+                          Copy
+                        </span>
                         <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em]">
                           <span>{swatch.hex}</span>
                           <span>{percentage}%</span>
                         </div>
-                        <div className="mt-2 text-xs uppercase tracking-[0.3em]">
+                        <div className="mt-2 text-xs uppercase tracking-[0.24em]">
                           Palette swatch
                         </div>
-                      </div>
+                        <span className="mt-6 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] opacity-80">
+                          Tap to copy
+                          <svg
+                            aria-hidden="true"
+                            className="h-4 w-4"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M16 4h2a2 2 0 0 1 2 2v12" />
+                            <path d="M8 4h-2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" />
+                            <rect x="8" y="2" width="8" height="6" rx="1.5" />
+                          </svg>
+                        </span>
+                      </button>
                     )
                   })}
                 </div>
@@ -756,9 +782,9 @@ function App() {
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--page-ink-muted)]">
                     Export Palette
                   </p>
-                  <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
                     <button
-                      className={`${buttonBase} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)]`}
+                      className={`${actionButton} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)]`}
                       onClick={() =>
                         handleCopy('hex list', toHexList(activeEntry, paletteMode))
                       }
@@ -766,7 +792,7 @@ function App() {
                       Copy HEX
                     </button>
                     <button
-                      className={`${buttonBase} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)]`}
+                      className={`${actionButton} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)]`}
                       onClick={() =>
                         handleCopy(
                           'CSS variables',
@@ -777,7 +803,7 @@ function App() {
                       Copy CSS
                     </button>
                     <button
-                      className={`${buttonBase} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)]`}
+                      className={`${actionButton} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)]`}
                       onClick={() =>
                         handleCopy(
                           'JSON',
@@ -788,7 +814,7 @@ function App() {
                       Copy JSON
                     </button>
                     <button
-                      className={`${buttonBase} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)]`}
+                      className={`${actionButton} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)]`}
                       onClick={() =>
                         handleCopy('badge HTML', toBadgeHtml(activeEntry, paletteMode))
                       }
@@ -810,7 +836,7 @@ function App() {
                 </span>
               </div>
 
-              <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {visibleEntries.map((entry) => {
                   const isActive = entry.name === activeEntry?.name
                   const swatches = entry.palettes[paletteMode].swatches
@@ -822,13 +848,13 @@ function App() {
                     cardText === '#0B0D11'
                       ? 'rgba(11,13,17,0.6)'
                       : 'rgba(248,247,242,0.75)'
+                  const baseShadow = `0 12px 26px ${toRgba(cardSwatchA, 0.22)}`
                   const cardStyle = {
                     backgroundImage: `linear-gradient(140deg, ${toRgba(cardSwatchA, 0.95)} 0%, ${toRgba(cardSwatchB, 0.88)} 55%, ${toRgba(cardSwatchC, 0.85)} 100%)`,
-                    borderColor: toRgba(cardSwatchA, 0.6),
                     color: cardText,
                     boxShadow: isActive
                       ? `0 0 0 2px ${toRgba(cardSwatchA, 0.7)}, 0 20px 40px ${toRgba(cardSwatchB, 0.35)}`
-                      : undefined,
+                      : baseShadow,
                   }
 
                   return (
@@ -836,13 +862,13 @@ function App() {
                       key={entry.name}
                       layout
                       whileHover={{ y: -4 }}
-                      className="rounded-3xl border px-4 py-4 text-left shadow-glow transition"
+                      className="rounded-2xl px-3 py-3 text-left transition"
                       style={cardStyle}
                       onClick={() => setSelectedName(entry.name)}
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
                         <div
-                          className="h-14 w-14 overflow-hidden rounded-2xl border border-white/30"
+                          className="h-12 w-12 overflow-hidden rounded-xl"
                           style={{ backgroundColor: toRgba(cardSwatchA, 0.2) }}
                         >
                           {entry.images[paletteMode] ? (
@@ -859,19 +885,19 @@ function App() {
                           )}
                         </div>
                         <div>
-                          <p className="text-sm font-semibold">
+                          <p className="text-[13px] font-semibold">
                             {entry.displayName}
                           </p>
-                          <p className="text-xs uppercase tracking-[0.2em]" style={{ color: cardMuted }}>
+                          <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: cardMuted }}>
                             #{formatDex(entry.speciesId)}
                           </p>
                         </div>
                       </div>
-                      <div className="mt-4 flex gap-2">
+                      <div className="mt-3 flex gap-2">
                         {swatches.map((swatch) => (
                           <span
                             key={`${entry.name}-${swatch.hex}`}
-                            className="h-3 w-full rounded-full"
+                            className="h-2 w-full rounded-full"
                             style={{ backgroundColor: swatch.hex }}
                           />
                         ))}
@@ -907,7 +933,7 @@ function App() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 12 }}
-            className="fixed bottom-6 right-6 rounded-full border border-[var(--page-stroke)] bg-[var(--page-surface-strong)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--page-ink)] shadow-glow"
+            className="fixed bottom-6 right-6 rounded-full bg-[var(--page-surface-strong)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--page-ink)] shadow-glow"
           >
             {toast}
           </motion.div>
