@@ -1,4 +1,4 @@
-import { hexToRgb, relativeLuminance } from './color'
+import { hexToRgb, relativeLuminance, rgbToHex } from './color'
 
 export const formatDex = (id: number) => id.toString().padStart(3, '0')
 
@@ -21,6 +21,21 @@ export const toRgba = (hex: string, alpha: number, fallback = 'rgba(0,0,0,0)') =
   }
 
   return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${alpha})`
+}
+
+export const mixHex = (hexA: string, hexB: string, amount = 0.5, fallback = hexA) => {
+  const rgbA = hexToRgb(hexA)
+  const rgbB = hexToRgb(hexB)
+  if (!rgbA || !rgbB) {
+    return fallback
+  }
+
+  const mix = rgbA.map((channel, index) => {
+    const blended = channel + (rgbB[index] - channel) * amount
+    return Math.round(blended)
+  }) as [number, number, number]
+
+  return rgbToHex(mix)
 }
 
 export const copyToClipboard = async (text: string) => {

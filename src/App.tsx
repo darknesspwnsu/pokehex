@@ -10,7 +10,7 @@ import { Toast } from './components/Toast'
 import { applyFilters } from './lib/filters'
 import { normalizeHex } from './lib/color'
 import { useLocalStorage } from './hooks/useLocalStorage'
-import { copyToClipboard, getContrastColor, toRgba, toggleValue } from './lib/ui'
+import { copyToClipboard, getContrastColor, mixHex, toRgba, toggleValue } from './lib/ui'
 import type { FormTag, PaletteMode, PokemonEntry, PokemonIndex } from './lib/types'
 
 const buildToast = (label: string) => `Copied ${label} to clipboard`
@@ -178,6 +178,7 @@ function App() {
 
   const visibleEntries = filteredEntries.slice(0, resultsLimit)
   const normalizedColor = normalizeHex(colorQuery) ?? '#F97316'
+  const isDark = theme === 'dark'
 
   const activeSwatches = activeEntry?.palettes[paletteMode].swatches ?? []
   const dominantHex = activeSwatches[0]?.hex ?? '#F6E6B4'
@@ -190,32 +191,33 @@ function App() {
   const panelSwatchA = activeSwatches[0]?.hex ?? dominantHex
   const panelSwatchB = activeSwatches[1]?.hex ?? panelSwatchA
   const panelSwatchC = activeSwatches[2]?.hex ?? panelSwatchB
+
+  const themeBlend = isDark ? '#0B0D11' : '#FFFFFF'
+  const themeMix = isDark ? 0.42 : 0.08
+  const themeSwatchA = mixHex(panelSwatchA, themeBlend, themeMix)
+  const themeSwatchB = mixHex(panelSwatchB, themeBlend, themeMix)
+  const themeSwatchC = mixHex(panelSwatchC, themeBlend, themeMix)
+
   const panelBackground =
-    `linear-gradient(160deg, ${panelSwatchA} 0%, ${panelSwatchB} 55%, ${panelSwatchC} 100%)`
-  const panelInk = dominantText
-  const panelInkMuted =
-    dominantText === '#0B0D11'
-      ? 'rgba(11,13,17,0.72)'
-      : 'rgba(248,247,242,0.86)'
-  const pageStroke =
-    dominantText === '#0B0D11'
-      ? 'rgba(11,13,17,0.08)'
-      : 'rgba(248,247,242,0.16)'
-  const pageSurface = toRgba(panelSwatchA, 0.22)
-  const pageSurfaceStrong = toRgba(panelSwatchB, 0.32)
-  const pageGlow = toRgba(panelSwatchB, 0.45)
-  const panelCard = toRgba(panelSwatchA, 0.26)
-  const panelCardStrong = toRgba(panelSwatchB, 0.38)
-  const panelChip = toRgba(panelSwatchA, 0.24)
-  const panelChipStrong = toRgba(panelSwatchB, 0.4)
-  const pageSoftA = toRgba(panelSwatchA, 0.6)
-  const pageSoftB = toRgba(panelSwatchB, 0.58)
-  const pageSoftC = toRgba(panelSwatchC, 0.52)
+    `linear-gradient(160deg, ${themeSwatchA} 0%, ${themeSwatchB} 55%, ${themeSwatchC} 100%)`
+  const panelInk = isDark ? '#F8F7F2' : dominantText
+  const panelInkMuted = isDark ? 'rgba(248,247,242,0.72)' : dominantMuted
+  const pageStroke = isDark ? 'rgba(248,247,242,0.14)' : 'rgba(11,13,17,0.08)'
+  const pageSurface = toRgba(themeSwatchA, isDark ? 0.3 : 0.22)
+  const pageSurfaceStrong = toRgba(themeSwatchB, isDark ? 0.42 : 0.32)
+  const pageGlow = toRgba(themeSwatchB, isDark ? 0.6 : 0.45)
+  const panelCard = toRgba(themeSwatchA, isDark ? 0.36 : 0.26)
+  const panelCardStrong = toRgba(themeSwatchB, isDark ? 0.5 : 0.38)
+  const panelChip = toRgba(themeSwatchA, isDark ? 0.3 : 0.24)
+  const panelChipStrong = toRgba(themeSwatchB, isDark ? 0.46 : 0.4)
+  const pageSoftA = toRgba(themeSwatchA, isDark ? 0.45 : 0.6)
+  const pageSoftB = toRgba(themeSwatchB, isDark ? 0.45 : 0.58)
+  const pageSoftC = toRgba(themeSwatchC, isDark ? 0.4 : 0.52)
   const pageStyle = {
-    '--page-a': panelSwatchA,
-    '--page-b': panelSwatchB,
-    '--page-c': panelSwatchC,
-    '--page-ink': dominantText,
+    '--page-a': themeSwatchA,
+    '--page-b': themeSwatchB,
+    '--page-c': themeSwatchC,
+    '--page-ink': panelInk,
     '--page-ink-muted': panelInkMuted,
     '--page-surface': pageSurface,
     '--page-surface-strong': pageSurfaceStrong,
@@ -226,7 +228,7 @@ function App() {
     '--page-soft-c': pageSoftC,
   } as CSSProperties
   const panelStyle = {
-    backgroundColor: panelSwatchA,
+    backgroundColor: themeSwatchA,
     backgroundImage: panelBackground,
     '--panel-ink': panelInk,
     '--panel-ink-muted': panelInkMuted,
@@ -266,7 +268,7 @@ function App() {
 
   return (
     <div
-      className="app-shell app-root flex min-h-screen flex-col gap-8 px-6 pb-16 pt-10 sm:px-10"
+      className="app-shell app-root app-container flex min-h-screen flex-col gap-8 px-6 pb-16 pt-10 sm:px-10"
       style={pageStyle}
     >
       <Header
@@ -274,8 +276,8 @@ function App() {
         onToggleTheme={() => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))}
       />
 
-      <main className="main-shell flex min-h-0 w-full flex-1 px-0">
-        <div className="grid h-full min-h-0 grid-cols-[340px_1fr] gap-8 layout-shell">
+      <main className="main-shell app-main flex min-h-0 w-full flex-1 px-0">
+        <div className="app-layout grid h-full min-h-0 grid-cols-[340px_1fr] gap-8 layout-shell">
           <SidePanel
             panelStyle={panelStyle}
             activeEntry={activeEntry}
@@ -323,17 +325,17 @@ function App() {
             onSelectName={setSelectedName}
           />
 
-          <section className="content-column flex min-h-0 flex-1 flex-col gap-7">
+          <section className="content-column app-content flex min-h-0 flex-1 flex-col gap-7">
             {loading ? (
-              <div className="rounded-none bg-[var(--page-surface)] p-10 text-center text-sm text-[var(--page-ink-muted)] shadow-glow">
+              <div className="app-state rounded-none bg-[var(--page-surface)] p-10 text-center text-sm text-[var(--page-ink-muted)] shadow-glow">
                 Loading Poke Hexcolor data...
               </div>
             ) : error ? (
-              <div className="rounded-none border border-dashed border-red-400 bg-red-50 p-10 text-center text-sm text-red-700">
+              <div className="app-state app-error rounded-none border border-dashed border-red-400 bg-red-50 p-10 text-center text-sm text-red-700">
                 {error}
               </div>
             ) : activeEntry ? (
-              <div className="space-y-6">
+              <div className="app-hero-stack space-y-6">
                 <HeroPanel
                   entry={activeEntry}
                   paletteMode={paletteMode}
@@ -363,13 +365,17 @@ function App() {
               dominantHex={dominantHex}
               canLoadMore={visibleEntries.length < filteredEntries.length}
               onSelect={setSelectedName}
-              onLoadMore={() => setResultsLimit((prev) => prev + 60)}
+              onLoadMore={() =>
+                setResultsLimit((prev) =>
+                  Math.min(prev + 60, filteredEntries.length),
+                )
+              }
             />
           </section>
         </div>
       </main>
 
-      <footer className="w-full text-xs uppercase tracking-[0.3em] text-[var(--page-ink-muted)]">
+      <footer className="site-footer w-full text-xs uppercase tracking-[0.3em] text-[var(--page-ink-muted)]">
         © {new Date().getFullYear()} Poke Hexcolor. All Pokemon artwork and
         trademarks belong to their respective owners.
       </footer>

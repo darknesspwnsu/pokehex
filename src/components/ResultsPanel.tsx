@@ -26,17 +26,17 @@ export const ResultsPanel = ({
   onLoadMore,
 }: ResultsPanelProps) => {
   return (
-    <div className={`${cardBase} results-panel flex min-h-0 flex-1 flex-col p-3`}>
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-[0.2em]">
+    <div className={`${cardBase} results-panel results-shell flex min-h-0 flex-1 flex-col p-3`}>
+      <div className="results-header flex items-center justify-between">
+        <h2 className="results-title text-sm font-semibold uppercase tracking-[0.1em]">
           Results
         </h2>
-        <span className="text-xs uppercase tracking-[0.2em] text-[var(--page-ink-muted)]">
+        <span className="results-count text-xs uppercase tracking-[0.1em] text-[var(--page-ink-muted)]">
           Showing {entries.length} of {totalCount}
         </span>
       </div>
 
-      <div className="results-scroll mt-3 min-h-0 flex-1">
+      <div className="results-scroll results-scrollable mt-3 flex min-h-0 flex-1 flex-col gap-3">
         <div className="results-grid grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
           {entries.map((entry) => {
             const isActive = entry.name === activeEntryName
@@ -50,19 +50,20 @@ export const ResultsPanel = ({
                 ? 'rgba(11,13,17,0.78)'
                 : 'rgba(248,247,242,0.88)'
             const baseShadow = `0 12px 26px ${toRgba(cardSwatchA, 0.22)}`
-            const labelBackdrop = toRgba(
-              cardText === '#0B0D11' ? '#ffffff' : '#0B0D11',
-              0.2,
-            )
-            const labelShadow =
-              cardText === '#0B0D11'
-                ? '0 1px 6px rgba(255,255,255,0.35)'
-                : '0 1px 6px rgba(0,0,0,0.45)'
+            const taperOverlay = `linear-gradient(90deg, ${toRgba(
+              cardSwatchA,
+              0,
+            )} 0%, ${toRgba(cardSwatchB, 0.16)} 45%, ${toRgba(
+              cardSwatchC,
+              0.38,
+            )} 100%)`
+            const borderTone = toRgba(cardSwatchB, isActive ? 0.75 : 0.5)
             const cardStyle = {
               backgroundImage: `linear-gradient(140deg, ${toRgba(cardSwatchA, 0.95)} 0%, ${toRgba(cardSwatchB, 0.88)} 55%, ${toRgba(cardSwatchC, 0.85)} 100%)`,
               color: cardText,
+              borderColor: borderTone,
               boxShadow: isActive
-                ? `0 0 0 2px ${toRgba(cardSwatchA, 0.7)}, 0 20px 40px ${toRgba(cardSwatchB, 0.35)}`
+                ? `0 0 0 2px ${toRgba(cardSwatchB, 0.6)}, 0 20px 40px ${toRgba(cardSwatchB, 0.35)}`
                 : baseShadow,
             }
 
@@ -71,10 +72,14 @@ export const ResultsPanel = ({
                 key={entry.name}
                 layout
                 whileHover={{ y: -4 }}
-                className="result-card relative overflow-hidden rounded-lg text-left transition"
+                className="result-card result-card-button group relative flex items-center gap-3 overflow-hidden rounded-md border text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--page-glow)]/60"
                 style={cardStyle}
                 onClick={() => onSelect(entry.name)}
               >
+                <div
+                  className="result-card-taper"
+                  style={{ backgroundImage: taperOverlay }}
+                />
                 <div
                   className="result-card-image flex-shrink-0 overflow-hidden rounded-sm"
                   style={{ backgroundColor: toRgba(cardSwatchA, 0.2) }}
@@ -83,57 +88,56 @@ export const ResultsPanel = ({
                     <img
                       src={entry.images[paletteMode]}
                       alt={entry.displayName}
-                      className="h-full w-full object-contain"
+                      className="result-card-image-asset h-full w-full object-contain"
                       loading="lazy"
                     />
                   ) : (
                     <div
-                      className="flex h-full w-full items-center justify-center text-[10px]"
+                      className="result-card-placeholder flex h-full w-full items-center justify-center text-[10px]"
                       style={{ color: cardMuted }}
                     >
                       No art
                     </div>
                   )}
-                  <div
-                    className="result-card-label rounded-none px-2 py-1"
-                    style={{ backgroundColor: labelBackdrop, textShadow: labelShadow }}
-                  >
-                    <p className="text-[11px] font-semibold leading-tight">
+                </div>
+                <div className="result-card-body">
+                  <div className="result-card-copy">
+                    <p className="result-card-name text-[13px] font-semibold leading-tight">
                       {entry.displayName}
                     </p>
                     <p
-                      className="text-[10px] uppercase tracking-[0.16em]"
+                      className="result-card-dex text-[10px] uppercase tracking-[0.1em]"
                       style={{ color: cardMuted }}
                     >
                       #{formatDex(entry.speciesId)}
                     </p>
                   </div>
-                </div>
-                <div className="result-card-swatches flex gap-1.5">
-                  {swatches.map((swatch) => (
-                    <span
-                      key={`${entry.name}-${swatch.hex}`}
-                      className="h-2 w-full rounded-full"
-                      style={{ backgroundColor: swatch.hex }}
-                    />
-                  ))}
+                  <div className="result-card-swatches flex gap-1.5">
+                    {swatches.map((swatch) => (
+                      <span
+                        key={`${entry.name}-${swatch.hex}`}
+                        className="result-card-swatch h-2 w-full rounded-full"
+                        style={{ backgroundColor: swatch.hex }}
+                      />
+                    ))}
+                  </div>
                 </div>
               </motion.button>
             )
           })}
         </div>
-      </div>
 
-      {canLoadMore && (
-        <div className="mt-6 flex justify-center">
-          <button
-            className={`${buttonBase} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)]`}
-            onClick={onLoadMore}
-          >
-            Load more
-          </button>
-        </div>
-      )}
+        {canLoadMore && (
+          <div className="results-load flex justify-center pb-2">
+            <button
+              className={`${buttonBase} results-load-button border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)]`}
+              onClick={onLoadMore}
+            >
+              Load more
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
