@@ -56,6 +56,13 @@ body {
   background-attachment: fixed;
 }
 
+.dark body {
+  background-image:
+    radial-gradient(circle at top, rgba(30, 41, 59, 0.8), transparent 55%),
+    radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.18), transparent 45%),
+    linear-gradient(120deg, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0));
+}
+
 body::before {
   content: '';
   position: fixed;
@@ -94,4 +101,17 @@ button {
 
 ::selection {
   background: rgba(249, 115, 22, 0.25);
+}
+
+@media (max-width: 768px) {
+  .layout-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  .layout-shell,
+  .layout-hero,
+  .layout-swatch {
+    grid-template-columns: 1fr !important;
+  }
 }

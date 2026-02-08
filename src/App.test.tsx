@@ -2,10 +2,10 @@ import { render, screen } from '@testing-library/react'
 import App from './App'
 
 describe('App', () => {
-  it('renders the hero headline', () => {
+  it('renders the hero headline', async () => {
     render(<App />)
     expect(
-      screen.getByRole('heading', {
+      await screen.findByRole('heading', {
         name: /official-art palettes for every pokemon form/i,
       }),
     ).toBeInTheDocument()
