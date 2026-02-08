@@ -71,14 +71,15 @@ const toRgba = (hex: string, alpha: number, fallback = 'rgba(0,0,0,0)') => {
 }
 
 const buttonBase =
-  'rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition duration-200 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[0_0_0_2px_var(--page-glow),0_16px_32px_rgba(0,0,0,0.22)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/45'
-const chipBase = `${buttonBase} px-3 py-2 text-[11px] tracking-[0.22em]`
-const actionButton = `${buttonBase} rounded-2xl px-4 py-3 text-[11px] tracking-[0.24em]`
+  'rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition duration-200 hover:-translate-y-0.5 hover:brightness-105 hover:shadow-[0_0_0_2px_var(--page-glow),0_16px_32px_rgba(0,0,0,0.22)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/45'
+const chipBase = `${buttonBase} px-3 py-2 text-[11px] tracking-[0.2em]`
+const actionButton = `${buttonBase} px-4 py-3 text-[11px] tracking-[0.22em]`
+const searchFieldBase = 'mt-3 flex items-center gap-3 px-4 py-2.5'
 
 const cardBase =
-  'rounded-3xl bg-[var(--page-surface)] shadow-glow backdrop-blur'
+  'rounded-none bg-[var(--page-surface)] shadow-glow backdrop-blur'
 const panelCardBase =
-  'rounded-3xl bg-[var(--panel-card)] p-6 text-[var(--panel-ink)] shadow-sm backdrop-blur'
+  'rounded-none bg-[var(--panel-card)] p-6 text-[var(--panel-ink)] shadow-sm backdrop-blur'
 
 function App() {
   const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('pokehex-theme', () => {
@@ -262,12 +263,12 @@ function App() {
   const panelInk = dominantText
   const panelInkMuted =
     dominantText === '#0B0D11'
-      ? 'rgba(11,13,17,0.74)'
+      ? 'rgba(11,13,17,0.72)'
       : 'rgba(248,247,242,0.86)'
   const pageStroke =
     dominantText === '#0B0D11'
-      ? 'rgba(11,13,17,0.18)'
-      : 'rgba(248,247,242,0.3)'
+      ? 'rgba(11,13,17,0.08)'
+      : 'rgba(248,247,242,0.16)'
   const pageSurface = toRgba(panelSwatchA, 0.22)
   const pageSurfaceStrong = toRgba(panelSwatchB, 0.32)
   const pageGlow = toRgba(panelSwatchB, 0.45)
@@ -303,9 +304,9 @@ function App() {
     '--panel-stroke': pageStroke,
   } as CSSProperties
   const chipStyle = (active: boolean, base: string) => ({
-    backgroundColor: active ? base : toRgba(base, 0.28),
+    backgroundColor: active ? base : toRgba(base, 0.2),
     color: active ? getContrastColor(base) : panelInk,
-    borderColor: active ? toRgba(base, 0.6) : toRgba(base, 0.45),
+    borderColor: active ? toRgba(base, 0.5) : toRgba(base, 0.22),
     boxShadow: active ? `0 12px 24px ${toRgba(base, 0.35)}` : undefined,
   })
 
@@ -335,8 +336,8 @@ function App() {
   }
 
   return (
-    <div className="app-shell min-h-screen px-6 pb-16 pt-10 sm:px-10" style={pageStyle}>
-      <header className="mx-auto flex max-w-7xl flex-col gap-5 rounded-[28px] bg-[var(--page-surface-strong)] p-5 shadow-float backdrop-blur layout-header sm:p-6">
+    <div className="app-shell app-root min-h-screen px-6 pb-16 pt-10 sm:px-10" style={pageStyle}>
+      <header className="site-header mx-auto flex max-w-7xl flex-col gap-5 rounded-none bg-[var(--page-surface-strong)] p-5 shadow-float backdrop-blur layout-header sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-6">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -346,7 +347,7 @@ function App() {
           >
             <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.32em] text-[var(--page-ink-muted)]">
               <span>Poke Hexcolor</span>
-              <span className="rounded-full bg-[var(--page-surface)] px-3 py-1 text-[10px] tracking-[0.3em] text-[var(--page-ink)] shadow-[0_10px_20px_rgba(0,0,0,0.12)]">
+              <span className="rounded-none bg-[var(--page-surface)] px-3 py-1 text-[10px] tracking-[0.3em] text-[var(--page-ink)] shadow-[0_10px_20px_rgba(0,0,0,0.12)]">
                 Gen 1-9
               </span>
             </div>
@@ -383,7 +384,7 @@ function App() {
       <main className="mx-auto mt-8 max-w-7xl">
         <div className="grid grid-cols-[340px_1fr] gap-8 layout-shell">
           <aside
-            className="space-y-8 rounded-[32px] p-6 shadow-float backdrop-blur"
+            className="side-panel space-y-8 rounded-none shadow-float backdrop-blur"
             style={panelStyle}
           >
             <div className={`${panelCardBase} space-y-3`}>
@@ -398,11 +399,11 @@ function App() {
                   ? `#${formatDex(activeEntry.speciesId)} · Gen ${activeEntry.generation}`
                   : 'Fetching data'}
               </div>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-[2px]">
                 {activeEntry?.types.map((type) => (
                   <span
                     key={`${activeEntry.name}-${type}`}
-                    className="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em]"
+                    className="rounded-none px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em]"
                     style={{
                       backgroundColor: TYPE_COLORS[type] ?? '#64748B',
                       color: getContrastColor(TYPE_COLORS[type] ?? '#64748B'),
@@ -414,8 +415,8 @@ function App() {
               </div>
             </div>
 
-            <div className={`${panelCardBase} space-y-4`}>
-              <div className="flex flex-wrap gap-3">
+            <div className={`${panelCardBase} panel-card space-y-4`}>
+              <div className="flex flex-wrap gap-[2px]">
                 <button
                   className={chipBase}
                   style={chipStyle(searchMode === 'name', panelSwatchB)}
@@ -437,14 +438,30 @@ function App() {
                   Search
                 </p>
                 {searchMode === 'name' ? (
-                  <input
-                    className="mt-3 w-full rounded-2xl bg-[var(--panel-card-strong)] px-4 py-3.5 text-sm text-[var(--panel-ink)] shadow-[0_16px_35px_rgba(0,0,0,0.22)] outline-none placeholder:text-[var(--panel-ink-muted)] focus:ring-2 focus:ring-[var(--page-glow)]/50"
-                    placeholder="Search by name or Pokedex number"
-                    value={query}
-                    onChange={(event) => setQuery(event.target.value)}
-                  />
+                  <div className={`${searchFieldBase} search-field`}>
+                    <input
+                      className="flex-1 bg-transparent text-center text-base font-semibold tracking-[0.04em] text-black outline-none placeholder:text-black/40"
+                      placeholder="Search by name or Pokedex number"
+                      value={query}
+                      onChange={(event) => setQuery(event.target.value)}
+                    />
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full border border-black/40 bg-white shadow-[0_6px_12px_rgba(0,0,0,0.16)]">
+                      <svg
+                        aria-hidden="true"
+                        className="h-4 w-4 text-black/70"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8L12 3z" />
+                      </svg>
+                    </span>
+                  </div>
                 ) : (
-                  <div className="mt-3 flex items-center gap-3 rounded-2xl bg-[var(--panel-card-strong)] px-4 py-3.5 shadow-[0_16px_35px_rgba(0,0,0,0.22)]">
+                  <div className={`${searchFieldBase} search-field`}>
                     <input
                       aria-label="Pick a color"
                       type="color"
@@ -455,7 +472,7 @@ function App() {
                       className="h-10 w-10 cursor-pointer rounded-full border-none bg-transparent"
                     />
                     <input
-                      className="w-full bg-transparent text-sm uppercase tracking-[0.2em] text-[var(--panel-ink)] outline-none placeholder:text-[var(--panel-ink-muted)]"
+                      className="flex-1 bg-transparent text-center text-base font-semibold uppercase tracking-[0.16em] text-black outline-none placeholder:text-black/40"
                       value={colorQuery}
                       onChange={(event) =>
                         setColorQuery(event.target.value.toUpperCase())
@@ -469,7 +486,7 @@ function App() {
                       placeholder="#F97316"
                     />
                     <span
-                      className="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em]"
+                      className="rounded-full border border-black/50 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] shadow-[0_8px_20px_rgba(0,0,0,0.2)]"
                       style={{
                         backgroundColor: normalizedColor,
                         color: getContrastColor(normalizedColor),
@@ -481,7 +498,7 @@ function App() {
                 )}
               </div>
 
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="flex flex-wrap items-center gap-[2px]">
                 <button
                   className={chipBase}
                   style={chipStyle(true, panelSwatchC)}
@@ -532,7 +549,7 @@ function App() {
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--panel-ink-muted)]">
                     Generation
                   </p>
-                  <div className="mt-2 flex flex-wrap gap-3">
+                  <div className="mt-2 flex flex-wrap gap-[2px]">
                     {generationOptions.map((gen) => (
                       <button
                         key={`gen-${gen}`}
@@ -554,7 +571,7 @@ function App() {
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--panel-ink-muted)]">
                     Type
                   </p>
-                  <div className="mt-2 flex flex-wrap gap-3">
+                  <div className="mt-2 flex flex-wrap gap-[2px]">
                     {typeOptions.map((type) => {
                       const isActive = selectedTypes.includes(type)
                       const color = TYPE_COLORS[type] ?? '#64748B'
@@ -591,7 +608,7 @@ function App() {
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--panel-ink-muted)]">
                     Forms
                   </p>
-                  <div className="mt-2 flex flex-wrap gap-3">
+                  <div className="mt-2 flex flex-wrap gap-[2px]">
                     {FORM_FILTERS.map((form) => (
                       <button
                         key={form.id}
@@ -618,14 +635,15 @@ function App() {
                   Pick a Pokemon to start building a quick-access strip.
                 </p>
               ) : (
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-[2px]">
                   {historyEntries.map((entry) => (
                     <button
                       key={`history-${entry.name}`}
-                      className="flex items-center gap-2 rounded-full bg-[var(--panel-chip)] px-3 py-2 text-xs font-semibold text-[var(--panel-ink)] shadow-[0_10px_24px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_0_0_2px_var(--page-glow),0_12px_20px_rgba(0,0,0,0.2)]"
+                      className={`${chipBase} flex items-center gap-2 px-2 py-1.5 text-[10px] tracking-[0.18em]`}
+                      style={chipStyle(false, panelSwatchA)}
                       onClick={() => setSelectedName(entry.name)}
                     >
-                      <span className="flex gap-1">
+                      <span className="flex gap-[2px]">
                         {entry.palettes[paletteMode].swatches.map((swatch) => (
                           <span
                             key={`${entry.name}-${swatch.hex}`}
@@ -642,13 +660,13 @@ function App() {
             </div>
           </aside>
 
-          <section className="space-y-6">
+          <section className="space-y-7">
             {loading ? (
-              <div className="rounded-3xl bg-[var(--page-surface)] p-10 text-center text-sm text-[var(--page-ink-muted)] shadow-glow">
+              <div className="rounded-none bg-[var(--page-surface)] p-10 text-center text-sm text-[var(--page-ink-muted)] shadow-glow">
                 Loading Poke Hexcolor data...
               </div>
             ) : error ? (
-              <div className="rounded-3xl border border-dashed border-red-400 bg-red-50 p-10 text-center text-sm text-red-700">
+              <div className="rounded-none border border-dashed border-red-400 bg-red-50 p-10 text-center text-sm text-red-700">
                 {error}
               </div>
             ) : activeEntry ? (
@@ -658,7 +676,7 @@ function App() {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4 }}
-                  className="rounded-[36px] p-8 shadow-float"
+                  className="hero-panel rounded-none shadow-float"
                   style={{
                     backgroundColor: dominantHex,
                     color: dominantText,
@@ -666,8 +684,8 @@ function App() {
                       'radial-gradient(circle at 20% 20%, rgba(255,255,255,0.35), transparent 55%), radial-gradient(circle at 80% 20%, rgba(0,0,0,0.2), transparent 60%)',
                   }}
                 >
-                  <div className="grid grid-cols-[1.1fr_0.9fr] gap-6 layout-hero">
-                    <div className="space-y-4">
+                  <div className="hero-content flex items-center justify-between gap-6 layout-hero">
+                    <div className="hero-info flex-1 space-y-4">
                       <p className="text-xs uppercase tracking-[0.35em]" style={{ color: dominantMuted }}>
                         Dominant color
                       </p>
@@ -681,7 +699,7 @@ function App() {
                         {activeEntry.types.map((type) => (
                           <span
                             key={`${activeEntry.name}-${type}`}
-                            className="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em]"
+                            className="rounded-none px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em]"
                             style={{
                               backgroundColor: TYPE_COLORS[type] ?? '#64748B',
                               color: getContrastColor(TYPE_COLORS[type] ?? '#64748B'),
@@ -692,7 +710,7 @@ function App() {
                         ))}
                       </div>
                       <div
-                        className="mt-4 inline-flex items-center gap-3 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em]"
+                        className="mt-4 inline-flex items-center gap-3 rounded-none px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em]"
                         style={{
                           backgroundColor: toRgba(dominantText, 0.18),
                           borderColor: toRgba(dominantText, 0.25),
@@ -702,31 +720,24 @@ function App() {
                         <span style={{ color: dominantMuted }}>dominant</span>
                       </div>
                     </div>
-                    <div className="flex items-center justify-center">
-                      <div
-                        className="rounded-[32px] p-6 shadow-[0_24px_50px_rgba(0,0,0,0.22)]"
-                        style={{
-                          backgroundColor: toRgba(dominantText, 0.12),
-                        }}
-                      >
-                        {activeEntry.images[paletteMode] ? (
-                          <img
-                            src={activeEntry.images[paletteMode]}
-                            alt={activeEntry.displayName}
-                            className="h-64 w-64 object-contain sm:h-80 sm:w-80"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="flex h-64 w-64 items-center justify-center text-xs" style={{ color: dominantMuted }}>
-                            No official art
-                          </div>
-                        )}
-                      </div>
+                    <div className="hero-art flex flex-1 items-center justify-center">
+                      {activeEntry.images[paletteMode] ? (
+                        <img
+                          src={activeEntry.images[paletteMode]}
+                          alt={activeEntry.displayName}
+                          className="max-h-[42vh] w-auto object-contain drop-shadow-[0_30px_45px_rgba(0,0,0,0.25)]"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="flex h-64 w-64 items-center justify-center text-xs" style={{ color: dominantMuted }}>
+                          No official art
+                        </div>
+                      )}
                     </div>
                   </div>
                 </motion.div>
 
-                <div className="grid grid-cols-3 gap-4 layout-swatch">
+                <div className="swatch-grid grid grid-cols-3 gap-4 layout-swatch">
                   {activeSwatches.map((swatch) => {
                     const percentage = totalPopulation
                       ? Math.round((swatch.population / totalPopulation) * 100)
@@ -737,42 +748,20 @@ function App() {
                         type="button"
                         aria-label={`Copy ${swatch.hex}`}
                         onClick={() => handleCopy('hex', swatch.hex)}
-                        className="group relative h-32 rounded-3xl px-5 py-4 text-left shadow-glow transition hover:-translate-y-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--page-glow)]/60"
+                        className="swatch-button group relative flex cursor-pointer flex-col justify-between rounded-sm border px-5 py-4 text-left shadow-glow transition hover:-translate-y-1 hover:brightness-105 hover:shadow-[0_0_0_2px_var(--page-glow),0_18px_36px_rgba(0,0,0,0.2)] active:scale-[0.98] active:brightness-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--page-glow)]/60"
                         style={{
                           backgroundColor: swatch.hex,
                           color: getContrastColor(swatch.hex),
+                          borderColor: swatch.hex,
                         }}
                       >
-                        <span
-                          className="absolute right-4 top-4 rounded-full bg-black/20 px-2 py-1 text-[10px] uppercase tracking-[0.2em] opacity-0 transition group-hover:opacity-100"
-                          style={{ color: getContrastColor(swatch.hex) }}
-                        >
-                          Copy
-                        </span>
                         <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em]">
                           <span>{swatch.hex}</span>
                           <span>{percentage}%</span>
                         </div>
-                        <div className="mt-2 text-xs uppercase tracking-[0.24em]">
-                          Palette swatch
+                        <div className="mt-2 text-[11px] uppercase tracking-[0.2em] opacity-80">
+                          Swatch
                         </div>
-                        <span className="mt-6 inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.18em] opacity-80">
-                          Tap to copy
-                          <svg
-                            aria-hidden="true"
-                            className="h-4 w-4"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="1.8"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path d="M16 4h2a2 2 0 0 1 2 2v12" />
-                            <path d="M8 4h-2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" />
-                            <rect x="8" y="2" width="8" height="6" rx="1.5" />
-                          </svg>
-                        </span>
                       </button>
                     )
                   })}
@@ -782,9 +771,9 @@ function App() {
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--page-ink-muted)]">
                     Export Palette
                   </p>
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <div className="mt-4 flex flex-wrap gap-3">
                     <button
-                      className={`${actionButton} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)]`}
+                      className={`${actionButton} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)] flex-1 min-w-[140px]`}
                       onClick={() =>
                         handleCopy('hex list', toHexList(activeEntry, paletteMode))
                       }
@@ -792,7 +781,7 @@ function App() {
                       Copy HEX
                     </button>
                     <button
-                      className={`${actionButton} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)]`}
+                      className={`${actionButton} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)] flex-1 min-w-[140px]`}
                       onClick={() =>
                         handleCopy(
                           'CSS variables',
@@ -803,7 +792,7 @@ function App() {
                       Copy CSS
                     </button>
                     <button
-                      className={`${actionButton} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)]`}
+                      className={`${actionButton} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)] flex-1 min-w-[140px]`}
                       onClick={() =>
                         handleCopy(
                           'JSON',
@@ -814,7 +803,7 @@ function App() {
                       Copy JSON
                     </button>
                     <button
-                      className={`${actionButton} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)]`}
+                      className={`${actionButton} border-[var(--page-stroke)] bg-[var(--page-surface-strong)] text-[var(--page-ink)] flex-1 min-w-[140px]`}
                       onClick={() =>
                         handleCopy('badge HTML', toBadgeHtml(activeEntry, paletteMode))
                       }
@@ -826,7 +815,7 @@ function App() {
               </div>
             ) : null}
 
-            <div className={`${cardBase} p-6`}>
+            <div className={`${cardBase} results-panel p-3`}>
               <div className="flex items-center justify-between">
                 <h2 className="text-sm font-semibold uppercase tracking-[0.2em]">
                   Results
@@ -836,7 +825,7 @@ function App() {
                 </span>
               </div>
 
-              <div className="mt-4 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              <div className="results-grid mt-3 grid gap-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
                 {visibleEntries.map((entry) => {
                   const isActive = entry.name === activeEntry?.name
                   const swatches = entry.palettes[paletteMode].swatches
@@ -846,9 +835,17 @@ function App() {
                   const cardText = getContrastColor(cardSwatchA)
                   const cardMuted =
                     cardText === '#0B0D11'
-                      ? 'rgba(11,13,17,0.6)'
-                      : 'rgba(248,247,242,0.75)'
+                      ? 'rgba(11,13,17,0.78)'
+                      : 'rgba(248,247,242,0.88)'
                   const baseShadow = `0 12px 26px ${toRgba(cardSwatchA, 0.22)}`
+                  const labelBackdrop = toRgba(
+                    cardText === '#0B0D11' ? '#ffffff' : '#0B0D11',
+                    0.2,
+                  )
+                  const labelShadow =
+                    cardText === '#0B0D11'
+                      ? '0 1px 6px rgba(255,255,255,0.35)'
+                      : '0 1px 6px rgba(0,0,0,0.45)'
                   const cardStyle = {
                     backgroundImage: `linear-gradient(140deg, ${toRgba(cardSwatchA, 0.95)} 0%, ${toRgba(cardSwatchB, 0.88)} 55%, ${toRgba(cardSwatchC, 0.85)} 100%)`,
                     color: cardText,
@@ -862,38 +859,36 @@ function App() {
                       key={entry.name}
                       layout
                       whileHover={{ y: -4 }}
-                      className="rounded-2xl px-3 py-3 text-left transition"
+                      className="result-card relative overflow-hidden rounded-lg text-left transition"
                       style={cardStyle}
                       onClick={() => setSelectedName(entry.name)}
                     >
-                      <div className="flex items-center gap-2">
+                      <div className="result-card-image flex-shrink-0 overflow-hidden rounded-sm" style={{ backgroundColor: toRgba(cardSwatchA, 0.2) }}>
+                        {entry.images[paletteMode] ? (
+                          <img
+                            src={entry.images[paletteMode]}
+                            alt={entry.displayName}
+                            className="h-full w-full object-contain"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-[10px]" style={{ color: cardMuted }}>
+                            No art
+                          </div>
+                        )}
                         <div
-                          className="h-12 w-12 overflow-hidden rounded-xl"
-                          style={{ backgroundColor: toRgba(cardSwatchA, 0.2) }}
+                          className="result-card-label rounded-none px-2 py-1"
+                          style={{ backgroundColor: labelBackdrop, textShadow: labelShadow }}
                         >
-                          {entry.images[paletteMode] ? (
-                            <img
-                              src={entry.images[paletteMode]}
-                              alt={entry.displayName}
-                              className="h-full w-full object-contain"
-                              loading="lazy"
-                            />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center text-[10px]" style={{ color: cardMuted }}>
-                              No art
-                            </div>
-                          )}
-                        </div>
-                        <div>
-                          <p className="text-[13px] font-semibold">
+                          <p className="text-[11px] font-semibold leading-tight">
                             {entry.displayName}
                           </p>
-                          <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: cardMuted }}>
+                          <p className="text-[10px] uppercase tracking-[0.16em]" style={{ color: cardMuted }}>
                             #{formatDex(entry.speciesId)}
                           </p>
                         </div>
                       </div>
-                      <div className="mt-3 flex gap-2">
+                      <div className="result-card-swatches flex gap-1.5">
                         {swatches.map((swatch) => (
                           <span
                             key={`${entry.name}-${swatch.hex}`}
@@ -933,7 +928,7 @@ function App() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 12 }}
-            className="fixed bottom-6 right-6 rounded-full bg-[var(--page-surface-strong)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--page-ink)] shadow-glow"
+            className="fixed bottom-6 right-6 rounded-none bg-[var(--page-surface-strong)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--page-ink)] shadow-glow"
           >
             {toast}
           </motion.div>
