@@ -1,5 +1,7 @@
 export type RGB = [number, number, number]
 
+export type PaletteMode = 'normal' | 'shiny'
+
 export type PaletteSwatch = {
   hex: string
   rgb: RGB
@@ -43,4 +45,10 @@ export type PokemonEntry = {
     normal: PaletteSet
     shiny: PaletteSet
   }
+}
+
+export type PokemonIndex = {
+  generatedAt: string
+  count: number
+  entries: PokemonEntry[]
 }
