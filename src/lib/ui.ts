@@ -22,3 +22,34 @@ export const toRgba = (hex: string, alpha: number, fallback = 'rgba(0,0,0,0)') =
 
   return `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${alpha})`
 }
+
+export const copyToClipboard = async (text: string) => {
+  if (typeof window === 'undefined') {
+    return false
+  }
+
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text)
+      return true
+    }
+  } catch (error) {
+    // Fall through to legacy copy API.
+  }
+
+  try {
+    const textarea = document.createElement('textarea')
+    textarea.value = text
+    textarea.setAttribute('readonly', '')
+    textarea.style.position = 'fixed'
+    textarea.style.opacity = '0'
+    textarea.style.left = '-9999px'
+    document.body.appendChild(textarea)
+    textarea.select()
+    const success = document.execCommand('copy')
+    document.body.removeChild(textarea)
+    return success
+  } catch (error) {
+    return false
+  }
+}

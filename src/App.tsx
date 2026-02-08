@@ -10,7 +10,7 @@ import { Toast } from './components/Toast'
 import { applyFilters } from './lib/filters'
 import { normalizeHex } from './lib/color'
 import { useLocalStorage } from './hooks/useLocalStorage'
-import { getContrastColor, toRgba, toggleValue } from './lib/ui'
+import { copyToClipboard, getContrastColor, toRgba, toggleValue } from './lib/ui'
 import type { FormTag, PaletteMode, PokemonEntry, PokemonIndex } from './lib/types'
 
 const buildToast = (label: string) => `Copied ${label} to clipboard`
@@ -250,12 +250,8 @@ function App() {
   )
 
   const handleCopy = async (label: string, text: string) => {
-    try {
-      await navigator.clipboard.writeText(text)
-      setToast(buildToast(label))
-    } catch (error) {
-      setToast('Unable to copy to clipboard.')
-    }
+    const success = await copyToClipboard(text)
+    setToast(success ? buildToast(label) : 'Unable to copy to clipboard.')
   }
 
   const handleSurprise = () => {
