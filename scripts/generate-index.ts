@@ -167,7 +167,7 @@ const extractPalette = async (url: string): Promise<PaletteSet> => {
   const buffer = Buffer.from(await response.arrayBuffer())
   const { data, info } = await sharp(buffer)
     .resize({ width: TARGET_SIZE, height: TARGET_SIZE, fit: 'inside' })
-    .removeAlpha()
+    .ensureAlpha()
     .raw()
     .toBuffer({ resolveWithObject: true })
 
