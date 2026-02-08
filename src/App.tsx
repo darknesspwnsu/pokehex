@@ -62,9 +62,12 @@ const toggleValue = <T,>(value: T, list: T[]) =>
 const buildToast = (label: string) => `Copied ${label} to clipboard`
 
 const buttonBase =
-  'rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/30'
+  'rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] shadow-sm transition hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/30'
 
-const cardBase = 'rounded-3xl border border-[var(--stroke)] bg-[var(--card)] shadow-glow'
+const cardBase =
+  'rounded-3xl border border-[var(--stroke)] bg-[var(--card)] shadow-glow'
+const panelCardBase =
+  'rounded-3xl border border-white/45 bg-white/80 p-7 shadow-sm backdrop-blur'
 
 function App() {
   const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('pokehex-theme', () => {
@@ -238,6 +241,14 @@ function App() {
       ? 'rgba(11,13,17,0.65)'
       : 'rgba(248,247,242,0.7)'
 
+  const panelSwatchA = activeSwatches[0]?.hex ?? dominantHex
+  const panelSwatchB = activeSwatches[1]?.hex ?? panelSwatchA
+  const panelSwatchC = activeSwatches[2]?.hex ?? panelSwatchB
+  const panelBackground =
+    `linear-gradient(160deg, ${panelSwatchA} 0%, ${panelSwatchB} 55%, ${panelSwatchC} 100%)`
+  const panelOverlay =
+    'radial-gradient(circle at top, rgba(255,255,255,0.35), transparent 55%)'
+
   const totalPopulation = activeSwatches.reduce(
     (sum, swatch) => sum + swatch.population,
     0,
@@ -304,10 +315,15 @@ function App() {
         </div>
       </header>
 
-      <main className="mx-auto mt-8 max-w-6xl">
-        <div className="grid grid-cols-[320px_1fr] gap-8 layout-shell">
-          <aside className="space-y-6">
-            <div className={`${cardBase} p-6`}>
+      <main className="mx-auto mt-10 max-w-6xl">
+        <div className="grid grid-cols-[320px_1fr] gap-10 layout-shell">
+          <aside
+            className="space-y-6 rounded-[32px] border border-white/40 p-6 shadow-float"
+            style={{
+              backgroundImage: `${panelOverlay}, ${panelBackground}`,
+            }}
+          >
+            <div className={panelCardBase}>
               <p className="text-xs uppercase tracking-[0.35em] text-[var(--ink-muted)]">
                 Selected Pokemon
               </p>
@@ -335,13 +351,13 @@ function App() {
               </div>
             </div>
 
-            <div className={`${cardBase} p-6`}>
+            <div className={panelCardBase}>
               <div className="flex flex-wrap gap-2">
                 <button
                   className={`${buttonBase} ${
                     searchMode === 'name'
                       ? 'border-[var(--ink)] bg-[var(--ink)] text-[var(--bg)]'
-                      : 'border-[var(--stroke)] bg-[var(--card)] text-[var(--ink-muted)]'
+                      : 'border-white/50 bg-white/70 text-[var(--ink-muted)]'
                   }`}
                   onClick={() => setSearchMode('name')}
                 >
@@ -351,7 +367,7 @@ function App() {
                   className={`${buttonBase} ${
                     searchMode === 'color'
                       ? 'border-[var(--ink)] bg-[var(--ink)] text-[var(--bg)]'
-                      : 'border-[var(--stroke)] bg-[var(--card)] text-[var(--ink-muted)]'
+                      : 'border-white/50 bg-white/70 text-[var(--ink-muted)]'
                   }`}
                   onClick={() => setSearchMode('color')}
                 >
@@ -359,19 +375,19 @@ function App() {
                 </button>
               </div>
 
-              <div className="mt-4">
+              <div className="mt-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ink-muted)]">
                   Search
                 </p>
                 {searchMode === 'name' ? (
                   <input
-                    className="mt-2 w-full rounded-2xl border border-[var(--stroke)] bg-white/80 px-4 py-3 text-sm text-[var(--ink)] shadow-sm outline-none focus:border-[var(--ink)] focus:ring-2 focus:ring-[var(--accent)]/20"
+                    className="mt-3 w-full rounded-2xl border border-white/60 bg-white/90 px-4 py-3.5 text-sm text-[var(--ink)] shadow-md outline-none placeholder:text-[var(--ink-muted)] focus:border-[var(--ink)] focus:ring-2 focus:ring-[var(--accent)]/25"
                     placeholder="Search by name or Pokedex number"
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
                   />
                 ) : (
-                  <div className="mt-2 flex items-center gap-3 rounded-2xl border border-[var(--stroke)] bg-white/80 px-4 py-3 shadow-sm">
+                  <div className="mt-3 flex items-center gap-3 rounded-2xl border border-white/60 bg-white/90 px-4 py-3.5 shadow-md">
                     <input
                       aria-label="Pick a color"
                       type="color"
@@ -382,7 +398,7 @@ function App() {
                       className="h-10 w-10 cursor-pointer rounded-full border-none bg-transparent"
                     />
                     <input
-                      className="w-full bg-transparent text-sm uppercase tracking-[0.2em] text-[var(--ink)] outline-none"
+                      className="w-full bg-transparent text-sm uppercase tracking-[0.2em] text-[var(--ink)] outline-none placeholder:text-[var(--ink-muted)]"
                       value={colorQuery}
                       onChange={(event) =>
                         setColorQuery(event.target.value.toUpperCase())
@@ -408,9 +424,9 @@ function App() {
                 )}
               </div>
 
-              <div className="mt-4 flex flex-wrap items-center gap-2">
+              <div className="mt-5 flex flex-wrap items-center gap-2">
                 <button
-                  className={`${buttonBase} border-[var(--stroke)] bg-[var(--card)] text-[var(--ink)]`}
+                  className={`${buttonBase} border-white/50 bg-white/80 text-[var(--ink)]`}
                   onClick={handleSurprise}
                 >
                   Surprise me
@@ -419,7 +435,7 @@ function App() {
                   className={`${buttonBase} ${
                     paletteMode === 'normal'
                       ? 'border-[var(--ink)] bg-[var(--ink)] text-[var(--bg)]'
-                      : 'border-[var(--stroke)] bg-[var(--card)] text-[var(--ink-muted)]'
+                      : 'border-white/50 bg-white/70 text-[var(--ink-muted)]'
                   }`}
                   onClick={() => setPaletteMode('normal')}
                 >
@@ -429,7 +445,7 @@ function App() {
                   className={`${buttonBase} ${
                     paletteMode === 'shiny'
                       ? 'border-[var(--ink)] bg-[var(--ink)] text-[var(--bg)]'
-                      : 'border-[var(--stroke)] bg-[var(--card)] text-[var(--ink-muted)]'
+                      : 'border-white/50 bg-white/70 text-[var(--ink-muted)]'
                   }`}
                   onClick={() => setPaletteMode('shiny')}
                 >
@@ -441,7 +457,7 @@ function App() {
               </div>
             </div>
 
-            <div className={`${cardBase} p-6`}>
+            <div className={panelCardBase}>
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold uppercase tracking-[0.2em]">
                   Filters
@@ -539,7 +555,7 @@ function App() {
               </div>
             </div>
 
-            <div className={`${cardBase} p-6`}>
+            <div className={panelCardBase}>
               <h3 className="text-sm font-semibold uppercase tracking-[0.2em]">
                 Palette History
               </h3>
