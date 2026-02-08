@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { Header } from './components/Header'
 import { HeroPanel } from './components/HeroPanel'
@@ -10,8 +10,11 @@ import { Toast } from './components/Toast'
 import { applyFilters } from './lib/filters'
 import { normalizeHex } from './lib/color'
 import { useLocalStorage } from './hooks/useLocalStorage'
-import { copyToClipboard, getContrastColor, mixHex, toRgba, toggleValue } from './lib/ui'
-import type { FormTag, PaletteMode, PokemonEntry, PokemonIndex } from './lib/types'
+import { useFilterState } from './hooks/useFilterState'
+import { useHistoryList } from './hooks/useHistoryList'
+import { usePaletteTheme } from './hooks/usePaletteTheme'
+import { usePokemonIndex } from './hooks/usePokemonIndex'
+import { copyToClipboard, getContrastColor, toRgba, toggleValue } from './lib/ui'
 
 const buildToast = (label: string) => `Copied ${label} to clipboard`
 
@@ -27,63 +30,31 @@ function App() {
     return 'light'
   })
 
-  const [index, setIndex] = useState<PokemonIndex | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  const [searchMode, setSearchMode] = useState<'name' | 'color'>('name')
-  const [query, setQuery] = useState('')
-  const [colorQuery, setColorQuery] = useState('#F97316')
-  const [paletteMode, setPaletteMode] = useState<PaletteMode>('normal')
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([])
-  const [selectedGenerations, setSelectedGenerations] = useState<number[]>([])
-  const [selectedForms, setSelectedForms] = useState<FormTag[]>([])
+  const { entries, entryMap, loading, error } = usePokemonIndex()
+  const {
+    searchMode,
+    setSearchMode,
+    query,
+    setQuery,
+    colorQuery,
+    setColorQuery,
+    paletteMode,
+    setPaletteMode,
+    selectedTypes,
+    setSelectedTypes,
+    selectedGenerations,
+    setSelectedGenerations,
+    selectedForms,
+    setSelectedForms,
+    clearFilters,
+  } = useFilterState()
   const [selectedName, setSelectedName] = useState<string | null>(null)
   const [resultsLimit, setResultsLimit] = useState(60)
   const [toast, setToast] = useState<string | null>(null)
 
-  const [history, setHistory] = useLocalStorage<string[]>('pokehex-history', [])
-
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')
   }, [theme])
-
-  useEffect(() => {
-    let active = true
-
-    const loadIndex = async () => {
-      try {
-        const response = await fetch('/data/pokemon-index.json')
-        if (!response.ok) {
-          throw new Error('Failed to load Pokemon palette data.')
-        }
-        const data = (await response.json()) as PokemonIndex
-        if (active) {
-          setIndex(data)
-        }
-      } catch (err) {
-        if (active) {
-          setError(err instanceof Error ? err.message : 'Unable to load data.')
-        }
-      } finally {
-        if (active) {
-          setLoading(false)
-        }
-      }
-    }
-
-    loadIndex()
-
-    return () => {
-      active = false
-    }
-  }, [])
-
-  const entries = index?.entries ?? []
-  const entryMap = useMemo(
-    () => new Map(entries.map((entry) => [entry.name, entry])),
-    [entries],
-  )
 
   const filteredEntries = useMemo(
     () =>
@@ -142,17 +113,6 @@ function App() {
   }, [activeEntry, selectedName])
 
   useEffect(() => {
-    if (!activeEntry) {
-      return
-    }
-
-    setHistory((prev) => {
-      const next = [activeEntry.name, ...prev.filter((name) => name !== activeEntry.name)]
-      return next.slice(0, 10)
-    })
-  }, [activeEntry, setHistory])
-
-  useEffect(() => {
     if (!toast) {
       return
     }
@@ -160,11 +120,6 @@ function App() {
     const timer = window.setTimeout(() => setToast(null), 1600)
     return () => window.clearTimeout(timer)
   }, [toast])
-
-  const historyEntries = useMemo(
-    () => history.map((name) => entryMap.get(name)).filter(Boolean) as PokemonEntry[],
-    [history, entryMap],
-  )
 
   const typeOptions = useMemo(
     () => Array.from(new Set(entries.flatMap((entry) => entry.types))).sort(),
@@ -178,66 +133,20 @@ function App() {
 
   const visibleEntries = filteredEntries.slice(0, resultsLimit)
   const normalizedColor = normalizeHex(colorQuery) ?? '#F97316'
-  const isDark = theme === 'dark'
 
-  const activeSwatches = activeEntry?.palettes[paletteMode].swatches ?? []
-  const dominantHex = activeSwatches[0]?.hex ?? '#F6E6B4'
-  const dominantText = getContrastColor(dominantHex)
-  const dominantMuted =
-    dominantText === '#0B0D11'
-      ? 'rgba(11,13,17,0.65)'
-      : 'rgba(248,247,242,0.7)'
-
-  const panelSwatchA = activeSwatches[0]?.hex ?? dominantHex
-  const panelSwatchB = activeSwatches[1]?.hex ?? panelSwatchA
-  const panelSwatchC = activeSwatches[2]?.hex ?? panelSwatchB
-
-  const themeBlend = isDark ? '#0B0D11' : '#FFFFFF'
-  const themeMix = isDark ? 0.42 : 0.08
-  const themeSwatchA = mixHex(panelSwatchA, themeBlend, themeMix)
-  const themeSwatchB = mixHex(panelSwatchB, themeBlend, themeMix)
-  const themeSwatchC = mixHex(panelSwatchC, themeBlend, themeMix)
-
-  const panelBackground =
-    `linear-gradient(160deg, ${themeSwatchA} 0%, ${themeSwatchB} 55%, ${themeSwatchC} 100%)`
-  const panelInk = isDark ? '#F8F7F2' : dominantText
-  const panelInkMuted = isDark ? 'rgba(248,247,242,0.72)' : dominantMuted
-  const pageStroke = isDark ? 'rgba(248,247,242,0.14)' : 'rgba(11,13,17,0.08)'
-  const pageSurface = toRgba(themeSwatchA, isDark ? 0.3 : 0.22)
-  const pageSurfaceStrong = toRgba(themeSwatchB, isDark ? 0.42 : 0.32)
-  const pageGlow = toRgba(themeSwatchB, isDark ? 0.6 : 0.45)
-  const panelCard = toRgba(themeSwatchA, isDark ? 0.36 : 0.26)
-  const panelCardStrong = toRgba(themeSwatchB, isDark ? 0.5 : 0.38)
-  const panelChip = toRgba(themeSwatchA, isDark ? 0.3 : 0.24)
-  const panelChipStrong = toRgba(themeSwatchB, isDark ? 0.46 : 0.4)
-  const pageSoftA = toRgba(themeSwatchA, isDark ? 0.45 : 0.6)
-  const pageSoftB = toRgba(themeSwatchB, isDark ? 0.45 : 0.58)
-  const pageSoftC = toRgba(themeSwatchC, isDark ? 0.4 : 0.52)
-  const pageStyle = {
-    '--page-a': themeSwatchA,
-    '--page-b': themeSwatchB,
-    '--page-c': themeSwatchC,
-    '--page-ink': panelInk,
-    '--page-ink-muted': panelInkMuted,
-    '--page-surface': pageSurface,
-    '--page-surface-strong': pageSurfaceStrong,
-    '--page-stroke': pageStroke,
-    '--page-glow': pageGlow,
-    '--page-soft-a': pageSoftA,
-    '--page-soft-b': pageSoftB,
-    '--page-soft-c': pageSoftC,
-  } as CSSProperties
-  const panelStyle = {
-    backgroundColor: themeSwatchA,
-    backgroundImage: panelBackground,
-    '--panel-ink': panelInk,
-    '--panel-ink-muted': panelInkMuted,
-    '--panel-card': panelCard,
-    '--panel-card-strong': panelCardStrong,
-    '--panel-chip': panelChip,
-    '--panel-chip-strong': panelChipStrong,
-    '--panel-stroke': pageStroke,
-  } as CSSProperties
+  const {
+    activeSwatches,
+    dominantHex,
+    dominantText,
+    dominantMuted,
+    panelSwatchA,
+    panelSwatchB,
+    panelSwatchC,
+    panelInk,
+    pageStyle,
+    panelStyle,
+    totalPopulation,
+  } = usePaletteTheme(activeEntry, paletteMode, theme)
   const chipStyle = (active: boolean, base: string) => ({
     backgroundColor: active ? base : toRgba(base, 0.2),
     color: active ? getContrastColor(base) : panelInk,
@@ -245,10 +154,7 @@ function App() {
     boxShadow: active ? `0 12px 24px ${toRgba(base, 0.35)}` : undefined,
   })
 
-  const totalPopulation = activeSwatches.reduce(
-    (sum, swatch) => sum + swatch.population,
-    0,
-  )
+  const { historyEntries } = useHistoryList(activeEntry, entryMap)
 
   const handleCopy = async (label: string, text: string) => {
     const success = await copyToClipboard(text)
@@ -317,11 +223,7 @@ function App() {
             onToggleForm={(form) =>
               setSelectedForms((prev) => toggleValue(form, prev))
             }
-            onClearFilters={() => {
-              setSelectedTypes([])
-              setSelectedGenerations([])
-              setSelectedForms([])
-            }}
+            onClearFilters={clearFilters}
             onSelectName={setSelectedName}
           />
 
