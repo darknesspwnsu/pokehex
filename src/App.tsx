@@ -61,6 +61,11 @@ const toggleValue = <T,>(value: T, list: T[]) =>
 
 const buildToast = (label: string) => `Copied ${label} to clipboard`
 
+const buttonBase =
+  'rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] transition hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/30'
+
+const cardBase = 'rounded-3xl border border-[var(--stroke)] bg-[var(--card)] shadow-glow'
+
 function App() {
   const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('pokehex-theme', () => {
     if (
@@ -228,7 +233,10 @@ function App() {
   const activeSwatches = activeEntry?.palettes[paletteMode].swatches ?? []
   const dominantHex = activeSwatches[0]?.hex ?? '#F6E6B4'
   const dominantText = getContrastColor(dominantHex)
-  const dominantMuted = dominantText === '#0B0D11' ? 'rgba(11,13,17,0.65)' : 'rgba(248,247,242,0.7)'
+  const dominantMuted =
+    dominantText === '#0B0D11'
+      ? 'rgba(11,13,17,0.65)'
+      : 'rgba(248,247,242,0.7)'
 
   const totalPopulation = activeSwatches.reduce(
     (sum, swatch) => sum + swatch.population,
@@ -278,7 +286,7 @@ function App() {
         </motion.div>
         <div className="flex items-center gap-3">
           <button
-            className="rounded-full border border-[var(--stroke)] bg-[var(--card)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] shadow-glow"
+            className={`${buttonBase} border-[var(--stroke)] bg-[var(--card)] text-[var(--ink)] shadow-glow`}
             onClick={() =>
               setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))
             }
@@ -286,7 +294,7 @@ function App() {
             {theme === 'light' ? 'Light Mode' : 'Dark Mode'}
           </button>
           <a
-            className="rounded-full border border-transparent bg-[var(--ink)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--bg)] shadow-glow transition hover:-translate-y-0.5"
+            className={`${buttonBase} border-transparent bg-[var(--ink)] text-[var(--bg)] shadow-glow`}
             href="https://github.com/pokehex/pokehex.github.io"
             target="_blank"
             rel="noreferrer"
@@ -297,9 +305,9 @@ function App() {
       </header>
 
       <main className="mx-auto mt-8 max-w-6xl">
-        <div className="grid grid-cols-[320px_1fr] gap-6 layout-shell">
+        <div className="grid grid-cols-[320px_1fr] gap-8 layout-shell">
           <aside className="space-y-6">
-            <div className="rounded-3xl border border-[var(--stroke)] bg-[var(--card)] p-5 shadow-glow">
+            <div className={`${cardBase} p-6`}>
               <p className="text-xs uppercase tracking-[0.35em] text-[var(--ink-muted)]">
                 Selected Pokemon
               </p>
@@ -327,23 +335,23 @@ function App() {
               </div>
             </div>
 
-            <div className="rounded-3xl border border-[var(--stroke)] bg-[var(--card)] p-5 shadow-glow">
+            <div className={`${cardBase} p-6`}>
               <div className="flex flex-wrap gap-2">
                 <button
-                  className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] ${
+                  className={`${buttonBase} ${
                     searchMode === 'name'
                       ? 'border-[var(--ink)] bg-[var(--ink)] text-[var(--bg)]'
-                      : 'border-[var(--stroke)] text-[var(--ink-muted)]'
+                      : 'border-[var(--stroke)] bg-[var(--card)] text-[var(--ink-muted)]'
                   }`}
                   onClick={() => setSearchMode('name')}
                 >
                   Name / Number
                 </button>
                 <button
-                  className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] ${
+                  className={`${buttonBase} ${
                     searchMode === 'color'
                       ? 'border-[var(--ink)] bg-[var(--ink)] text-[var(--bg)]'
-                      : 'border-[var(--stroke)] text-[var(--ink-muted)]'
+                      : 'border-[var(--stroke)] bg-[var(--card)] text-[var(--ink-muted)]'
                   }`}
                   onClick={() => setSearchMode('color')}
                 >
@@ -352,15 +360,18 @@ function App() {
               </div>
 
               <div className="mt-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ink-muted)]">
+                  Search
+                </p>
                 {searchMode === 'name' ? (
                   <input
-                    className="w-full rounded-2xl border border-[var(--stroke)] bg-[var(--bg-muted)] px-4 py-3 text-sm text-[var(--ink)] outline-none focus:border-[var(--ink)]"
+                    className="mt-2 w-full rounded-2xl border border-[var(--stroke)] bg-white/80 px-4 py-3 text-sm text-[var(--ink)] shadow-sm outline-none focus:border-[var(--ink)] focus:ring-2 focus:ring-[var(--accent)]/20"
                     placeholder="Search by name or Pokedex number"
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
                   />
                 ) : (
-                  <div className="flex items-center gap-3 rounded-2xl border border-[var(--stroke)] bg-[var(--bg-muted)] px-4 py-3">
+                  <div className="mt-2 flex items-center gap-3 rounded-2xl border border-[var(--stroke)] bg-white/80 px-4 py-3 shadow-sm">
                     <input
                       aria-label="Pick a color"
                       type="color"
@@ -399,26 +410,26 @@ function App() {
 
               <div className="mt-4 flex flex-wrap items-center gap-2">
                 <button
-                  className="rounded-full border border-[var(--stroke)] bg-[var(--card)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em]"
+                  className={`${buttonBase} border-[var(--stroke)] bg-[var(--card)] text-[var(--ink)]`}
                   onClick={handleSurprise}
                 >
                   Surprise me
                 </button>
                 <button
-                  className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] ${
+                  className={`${buttonBase} ${
                     paletteMode === 'normal'
                       ? 'border-[var(--ink)] bg-[var(--ink)] text-[var(--bg)]'
-                      : 'border-[var(--stroke)] text-[var(--ink-muted)]'
+                      : 'border-[var(--stroke)] bg-[var(--card)] text-[var(--ink-muted)]'
                   }`}
                   onClick={() => setPaletteMode('normal')}
                 >
                   Normal
                 </button>
                 <button
-                  className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] ${
+                  className={`${buttonBase} ${
                     paletteMode === 'shiny'
                       ? 'border-[var(--ink)] bg-[var(--ink)] text-[var(--bg)]'
-                      : 'border-[var(--stroke)] text-[var(--ink-muted)]'
+                      : 'border-[var(--stroke)] bg-[var(--card)] text-[var(--ink-muted)]'
                   }`}
                   onClick={() => setPaletteMode('shiny')}
                 >
@@ -430,7 +441,7 @@ function App() {
               </div>
             </div>
 
-            <div className="rounded-3xl border border-[var(--stroke)] bg-[var(--card)] p-5 shadow-glow">
+            <div className={`${cardBase} p-6`}>
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold uppercase tracking-[0.2em]">
                   Filters
@@ -456,10 +467,10 @@ function App() {
                     {generationOptions.map((gen) => (
                       <button
                         key={`gen-${gen}`}
-                        className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] ${
+                        className={`${buttonBase} px-3 py-1 ${
                           selectedGenerations.includes(gen)
                             ? 'border-[var(--ink)] bg-[var(--ink)] text-[var(--bg)]'
-                            : 'border-[var(--stroke)] text-[var(--ink-muted)]'
+                            : 'border-[var(--stroke)] bg-[var(--card)] text-[var(--ink-muted)]'
                         }`}
                         onClick={() =>
                           setSelectedGenerations((prev) =>
@@ -484,7 +495,7 @@ function App() {
                       return (
                         <button
                           key={type}
-                          className="rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em]"
+                          className={`${buttonBase} px-3 py-1`}
                           style={{
                             borderColor: isActive ? color : 'var(--stroke)',
                             backgroundColor: isActive ? color : 'transparent',
@@ -511,10 +522,10 @@ function App() {
                     {FORM_FILTERS.map((form) => (
                       <button
                         key={form.id}
-                        className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] ${
+                        className={`${buttonBase} px-3 py-1 ${
                           selectedForms.includes(form.id)
                             ? 'border-[var(--ink)] bg-[var(--ink)] text-[var(--bg)]'
-                            : 'border-[var(--stroke)] text-[var(--ink-muted)]'
+                            : 'border-[var(--stroke)] bg-[var(--card)] text-[var(--ink-muted)]'
                         }`}
                         onClick={() =>
                           setSelectedForms((prev) => toggleValue(form.id, prev))
@@ -528,7 +539,7 @@ function App() {
               </div>
             </div>
 
-            <div className="rounded-3xl border border-[var(--stroke)] bg-[var(--card)] p-5 shadow-glow">
+            <div className={`${cardBase} p-6`}>
               <h3 className="text-sm font-semibold uppercase tracking-[0.2em]">
                 Palette History
               </h3>
@@ -577,7 +588,7 @@ function App() {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4 }}
-                  className="rounded-3xl border border-[var(--stroke)] p-6 shadow-float"
+                  className="rounded-[32px] border border-[var(--stroke)] p-8 shadow-float"
                   style={{
                     backgroundColor: dominantHex,
                     color: dominantText,
@@ -587,10 +598,7 @@ function App() {
                 >
                   <div className="grid grid-cols-[1.1fr_0.9fr] gap-6 layout-hero">
                     <div className="space-y-4">
-                      <p
-                        className="text-xs uppercase tracking-[0.35em]"
-                        style={{ color: dominantMuted }}
-                      >
+                      <p className="text-xs uppercase tracking-[0.35em]" style={{ color: dominantMuted }}>
                         Dominant color
                       </p>
                       <h2 className="font-display text-4xl sm:text-5xl">
@@ -663,13 +671,13 @@ function App() {
                   })}
                 </div>
 
-                <div className="rounded-3xl border border-[var(--stroke)] bg-[var(--card)] p-5 shadow-glow">
+                <div className={`${cardBase} p-5`}>
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--ink-muted)]">
                     Export Palette
                   </p>
                   <div className="mt-3 grid gap-2 sm:grid-cols-2">
                     <button
-                      className="rounded-full border border-[var(--stroke)] bg-[var(--card)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em]"
+                      className={`${buttonBase} border-[var(--stroke)] bg-[var(--card)] text-[var(--ink)]`}
                       onClick={() =>
                         handleCopy('hex list', toHexList(activeEntry, paletteMode))
                       }
@@ -677,7 +685,7 @@ function App() {
                       Copy HEX
                     </button>
                     <button
-                      className="rounded-full border border-[var(--stroke)] bg-[var(--card)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em]"
+                      className={`${buttonBase} border-[var(--stroke)] bg-[var(--card)] text-[var(--ink)]`}
                       onClick={() =>
                         handleCopy(
                           'CSS variables',
@@ -688,7 +696,7 @@ function App() {
                       Copy CSS
                     </button>
                     <button
-                      className="rounded-full border border-[var(--stroke)] bg-[var(--card)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em]"
+                      className={`${buttonBase} border-[var(--stroke)] bg-[var(--card)] text-[var(--ink)]`}
                       onClick={() =>
                         handleCopy(
                           'JSON',
@@ -699,7 +707,7 @@ function App() {
                       Copy JSON
                     </button>
                     <button
-                      className="rounded-full border border-[var(--stroke)] bg-[var(--card)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em]"
+                      className={`${buttonBase} border-[var(--stroke)] bg-[var(--card)] text-[var(--ink)]`}
                       onClick={() =>
                         handleCopy('badge HTML', toBadgeHtml(activeEntry, paletteMode))
                       }
@@ -711,7 +719,7 @@ function App() {
               </div>
             ) : null}
 
-            <div className="rounded-3xl border border-[var(--stroke)] bg-[var(--card)] p-6 shadow-glow">
+            <div className={`${cardBase} p-6`}>
               <div className="flex items-center justify-between">
                 <h2 className="text-sm font-semibold uppercase tracking-[0.2em]">
                   Results
@@ -779,7 +787,7 @@ function App() {
               {visibleEntries.length < filteredEntries.length && (
                 <div className="mt-6 flex justify-center">
                   <button
-                    className="rounded-full border border-[var(--stroke)] bg-[var(--card)] px-5 py-2 text-xs font-semibold uppercase tracking-[0.2em]"
+                    className={`${buttonBase} border-[var(--stroke)] bg-[var(--card)] text-[var(--ink)]`}
                     onClick={() => setResultsLimit((prev) => prev + 60)}
                   >
                     Load more
