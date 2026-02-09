@@ -8,7 +8,7 @@ import { SwatchGrid } from './components/SwatchGrid'
 import { ExportPanel } from './components/ExportPanel'
 import { ResultsPanel } from './components/ResultsPanel'
 import { Toast } from './components/Toast'
-import { applyFilters } from './lib/filters'
+import { filterByCriteria, filterByQuery, sortByColorDistance } from './lib/filters'
 import { normalizeHex } from './lib/color'
 import { useLocalStorage } from './hooks/useLocalStorage'
 import { useFilterState } from './hooks/useFilterState'
@@ -118,28 +118,27 @@ function App() {
   const debouncedQuery = useDebouncedValue(query, 250)
   const debouncedColorQuery = useDebouncedValue(colorQuery, 250)
 
-  const filteredEntries = useMemo(
+  const baseEntries = useMemo(
     () =>
-      applyFilters(entries, {
-        query: debouncedQuery,
-        colorQuery: debouncedColorQuery,
-        searchMode,
+      filterByCriteria(entries, {
         selectedTypes,
         selectedGenerations,
         selectedForms,
-        paletteMode,
       }),
-    [
-      entries,
-      debouncedQuery,
-      debouncedColorQuery,
-      searchMode,
-      selectedTypes,
-      selectedGenerations,
-      selectedForms,
-      paletteMode,
-    ],
+    [entries, selectedTypes, selectedGenerations, selectedForms],
   )
+
+  const filteredEntries = useMemo(() => {
+    if (searchMode === 'color') {
+      return sortByColorDistance(baseEntries, debouncedColorQuery, paletteMode)
+    }
+
+    if (!debouncedQuery.trim()) {
+      return baseEntries
+    }
+
+    return filterByQuery(baseEntries, debouncedQuery)
+  }, [baseEntries, debouncedColorQuery, debouncedQuery, paletteMode, searchMode])
 
   useEffect(() => {
     setResultsLimit(60)

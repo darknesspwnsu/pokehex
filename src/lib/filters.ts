@@ -13,6 +13,11 @@ export type FilterState = {
   paletteMode: PaletteMode
 }
 
+export type FilterCriteria = Pick<
+  FilterState,
+  'selectedTypes' | 'selectedGenerations' | 'selectedForms'
+>
+
 const matchesQuery = (entry: PokemonEntry, query: string) => {
   const trimmed = query.trim().toLowerCase()
   if (!trimmed) {
@@ -31,23 +36,23 @@ const matchesQuery = (entry: PokemonEntry, query: string) => {
   )
 }
 
-const matchesFilters = (entry: PokemonEntry, filters: FilterState) => {
+const matchesCriteria = (entry: PokemonEntry, criteria: FilterCriteria) => {
   const matchesGeneration =
-    filters.selectedGenerations.length === 0 ||
-    filters.selectedGenerations.includes(entry.generation)
+    criteria.selectedGenerations.length === 0 ||
+    criteria.selectedGenerations.includes(entry.generation)
 
   const matchesType =
-    filters.selectedTypes.length === 0 ||
-    filters.selectedTypes.some((type) => entry.types.includes(type))
+    criteria.selectedTypes.length === 0 ||
+    criteria.selectedTypes.some((type) => entry.types.includes(type))
 
   const matchesForm =
-    filters.selectedForms.length === 0 ||
-    filters.selectedForms.some((tag) => entry.formTags.includes(tag))
+    criteria.selectedForms.length === 0 ||
+    criteria.selectedForms.some((tag) => entry.formTags.includes(tag))
 
   return matchesGeneration && matchesType && matchesForm
 }
 
-const sortByColorDistance = (
+export const sortByColorDistance = (
   entries: PokemonEntry[],
   colorHex: string,
   mode: PaletteMode,
@@ -69,12 +74,22 @@ const sortByColorDistance = (
     .map(({ entry }) => entry)
 }
 
+export const filterByCriteria = (entries: PokemonEntry[], criteria: FilterCriteria) =>
+  entries.filter((entry) => matchesCriteria(entry, criteria))
+
+export const filterByQuery = (entries: PokemonEntry[], query: string) =>
+  entries.filter((entry) => matchesQuery(entry, query))
+
 export const applyFilters = (entries: PokemonEntry[], filters: FilterState) => {
-  const base = entries.filter((entry) => matchesFilters(entry, filters))
+  const base = filterByCriteria(entries, filters)
 
   if (filters.searchMode === 'color') {
     return sortByColorDistance(base, filters.colorQuery, filters.paletteMode)
   }
 
-  return base.filter((entry) => matchesQuery(entry, filters.query))
+  if (!filters.query.trim()) {
+    return base
+  }
+
+  return filterByQuery(base, filters.query)
 }
