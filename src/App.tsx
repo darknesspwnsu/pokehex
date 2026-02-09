@@ -14,6 +14,7 @@ import { useFilterState } from './hooks/useFilterState'
 import { useHistoryList } from './hooks/useHistoryList'
 import { usePaletteTheme } from './hooks/usePaletteTheme'
 import { usePokemonIndex } from './hooks/usePokemonIndex'
+import { useDebouncedValue } from './hooks/useDebouncedValue'
 import { copyToClipboard, getContrastColor, toRgba, toggleValue } from './lib/ui'
 
 const buildToast = (label: string) => `Copied ${label} to clipboard`
@@ -36,8 +37,10 @@ function App() {
     setSearchMode,
     query,
     setQuery,
+    clearQuery,
     colorQuery,
     setColorQuery,
+    resetColorQuery,
     paletteMode,
     setPaletteMode,
     selectedTypes,
@@ -56,11 +59,14 @@ function App() {
     document.documentElement.classList.toggle('dark', theme === 'dark')
   }, [theme])
 
+  const debouncedQuery = useDebouncedValue(query, 250)
+  const debouncedColorQuery = useDebouncedValue(colorQuery, 250)
+
   const filteredEntries = useMemo(
     () =>
       applyFilters(entries, {
-        query,
-        colorQuery,
+        query: debouncedQuery,
+        colorQuery: debouncedColorQuery,
         searchMode,
         selectedTypes,
         selectedGenerations,
@@ -69,8 +75,8 @@ function App() {
       }),
     [
       entries,
-      query,
-      colorQuery,
+      debouncedQuery,
+      debouncedColorQuery,
       searchMode,
       selectedTypes,
       selectedGenerations,
@@ -182,6 +188,15 @@ function App() {
         onToggleTheme={() => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))}
       />
 
+      <section className="intro-banner mx-auto w-full max-w-7xl space-y-2 px-0">
+        <h1 className="intro-title font-display text-4xl leading-tight text-[var(--page-ink)] sm:text-5xl">
+          Official-art palettes for every Pokemon form.
+        </h1>
+        <p className="intro-subtitle max-w-3xl text-sm text-[var(--page-ink-muted)] sm:text-base">
+          Search by name, number, or nearest color match to reveal dominant swatches. Filter by generation, type, and form, then export clean palette snippets.
+        </p>
+      </section>
+
       <main className="main-shell app-main flex min-h-0 w-full flex-1 px-0">
         <div className="app-layout grid h-full min-h-0 grid-cols-[340px_1fr] gap-8 layout-shell">
           <SidePanel
@@ -205,7 +220,9 @@ function App() {
             chipStyle={chipStyle}
             onSearchModeChange={setSearchMode}
             onQueryChange={setQuery}
+            onClearQuery={clearQuery}
             onColorChange={setColorQuery}
+            onResetColor={resetColorQuery}
             onColorBlur={() => {
               const normalized = normalizeHex(colorQuery)
               if (normalized) {

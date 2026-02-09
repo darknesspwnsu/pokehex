@@ -6,7 +6,7 @@ describe('App', () => {
     render(<App />)
     expect(
       await screen.findByRole('heading', {
-        name: /poke hexcolor/i,
+        name: /official-art palettes for every pokemon form/i,
       }),
     ).toBeInTheDocument()
   })

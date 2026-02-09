@@ -9,10 +9,25 @@
 
 .hero-art {
   height: 100%;
+  flex: 0 0 46%;
+  max-width: 46%;
 }
 
 .hero-art-image {
-  height: 80%;
+  height: 100%;
   max-height: 100%;
-  width: auto;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .hero-art {
+    flex: 1 1 auto;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .hero-art-image {
+    height: auto;
+    max-height: 55vh;
+  }
 }

@@ -27,7 +27,9 @@ type SidePanelProps = {
   chipStyle: (active: boolean, base: string) => CSSProperties
   onSearchModeChange: (mode: 'name' | 'color') => void
   onQueryChange: (value: string) => void
+  onClearQuery: () => void
   onColorChange: (value: string) => void
+  onResetColor: () => void
   onColorBlur: () => void
   onPaletteModeChange: (mode: PaletteMode) => void
   onSurprise: () => void
@@ -59,7 +61,9 @@ export const SidePanel = ({
   chipStyle,
   onSearchModeChange,
   onQueryChange,
+  onClearQuery,
   onColorChange,
+  onResetColor,
   onColorBlur,
   onPaletteModeChange,
   onSurprise,
@@ -85,7 +89,9 @@ export const SidePanel = ({
           chipStyle={chipStyle}
           onSearchModeChange={onSearchModeChange}
           onQueryChange={onQueryChange}
+          onClearQuery={onClearQuery}
           onColorChange={onColorChange}
+          onResetColor={onResetColor}
           onColorBlur={onColorBlur}
           onPaletteModeChange={onPaletteModeChange}
           onSurprise={onSurprise}

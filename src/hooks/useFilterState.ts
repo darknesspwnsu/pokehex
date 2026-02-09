@@ -7,8 +7,10 @@ type FilterState = {
   setSearchMode: (mode: 'name' | 'color') => void
   query: string
   setQuery: (value: string) => void
+  clearQuery: () => void
   colorQuery: string
   setColorQuery: (value: string) => void
+  resetColorQuery: () => void
   paletteMode: PaletteMode
   setPaletteMode: (mode: PaletteMode) => void
   selectedTypes: string[]
@@ -21,9 +23,10 @@ type FilterState = {
 }
 
 export const useFilterState = (): FilterState => {
+  const defaultColor = '#F97316'
   const [searchMode, setSearchMode] = useState<'name' | 'color'>('name')
   const [query, setQuery] = useState('')
-  const [colorQuery, setColorQuery] = useState('#F97316')
+  const [colorQuery, setColorQuery] = useState(defaultColor)
   const [paletteMode, setPaletteMode] = useState<PaletteMode>('normal')
   const [selectedTypes, setSelectedTypes] = useState<string[]>([])
   const [selectedGenerations, setSelectedGenerations] = useState<number[]>([])
@@ -35,13 +38,23 @@ export const useFilterState = (): FilterState => {
     setSelectedForms([])
   }
 
+  const clearQuery = () => {
+    setQuery('')
+  }
+
+  const resetColorQuery = () => {
+    setColorQuery(defaultColor)
+  }
+
   return {
     searchMode,
     setSearchMode,
     query,
     setQuery,
+    clearQuery,
     colorQuery,
     setColorQuery,
+    resetColorQuery,
     paletteMode,
     setPaletteMode,
     selectedTypes,

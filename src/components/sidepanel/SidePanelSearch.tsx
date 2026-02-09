@@ -16,7 +16,9 @@ type SidePanelSearchProps = {
   chipStyle: (active: boolean, base: string) => CSSProperties
   onSearchModeChange: (mode: 'name' | 'color') => void
   onQueryChange: (value: string) => void
+  onClearQuery: () => void
   onColorChange: (value: string) => void
+  onResetColor: () => void
   onColorBlur: () => void
   onPaletteModeChange: (mode: PaletteMode) => void
   onSurprise: () => void
@@ -34,7 +36,9 @@ export const SidePanelSearch = ({
   chipStyle,
   onSearchModeChange,
   onQueryChange,
+  onClearQuery,
   onColorChange,
+  onResetColor,
   onColorBlur,
   onPaletteModeChange,
   onSurprise,
@@ -65,15 +69,25 @@ export const SidePanelSearch = ({
         {searchMode === 'name' ? (
           <div className={`${searchFieldBase} search-field side-panel-search-input`}>
             <input
-              className="search-field-input flex-1 border-none bg-transparent text-center text-base font-semibold tracking-[0.04em] text-black outline-none placeholder:text-black/40 focus:ring-0"
+              className="search-field-input flex-1 border-none bg-transparent text-center text-base font-semibold tracking-[0.04em] outline-none focus:ring-0"
               placeholder="Search by name or Pokedex number"
               value={query}
               onChange={(event) => onQueryChange(event.target.value)}
             />
-            <span className="search-field-icon flex h-8 w-8 items-center justify-center rounded-full border border-black/40 bg-white shadow-[0_6px_12px_rgba(0,0,0,0.16)]">
+            {query.length > 0 && (
+              <button
+                type="button"
+                onClick={onClearQuery}
+                className="search-field-clear flex h-8 w-8 items-center justify-center rounded-full text-[14px] font-semibold"
+                aria-label="Clear search"
+              >
+                ×
+              </button>
+            )}
+            <span className="search-field-icon flex h-8 w-8 items-center justify-center rounded-full">
               <svg
                 aria-hidden="true"
-                className="h-4 w-4 text-black/70"
+                className="h-4 w-4"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -95,14 +109,22 @@ export const SidePanelSearch = ({
               className="search-field-color h-10 w-10 cursor-pointer rounded-full border-none bg-transparent focus:ring-0"
             />
             <input
-              className="search-field-input flex-1 border-none bg-transparent text-center text-base font-semibold uppercase tracking-[0.16em] text-black outline-none placeholder:text-black/40 focus:ring-0"
+              className="search-field-input flex-1 border-none bg-transparent text-center text-base font-semibold uppercase tracking-[0.16em] outline-none focus:ring-0"
               value={colorQuery}
               onChange={(event) => onColorChange(event.target.value.toUpperCase())}
               onBlur={onColorBlur}
               placeholder="#F97316"
             />
+            <button
+              type="button"
+              onClick={onResetColor}
+              className="search-field-clear flex h-8 w-8 items-center justify-center rounded-full text-[14px] font-semibold"
+              aria-label="Reset color"
+            >
+              ×
+            </button>
             <span
-              className="search-field-chip rounded-full border border-black/50 bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.1em] shadow-[0_8px_20px_rgba(0,0,0,0.2)]"
+              className="search-field-chip rounded-full border bg-white px-3 py-1 text-xs font-semibold uppercase tracking-[0.1em]"
               style={{
                 backgroundColor: normalizedColor,
                 color: getContrastColor(normalizedColor),
@@ -114,7 +136,7 @@ export const SidePanelSearch = ({
         )}
       </div>
 
-      <div className="side-panel-actions flex flex-wrap items-center gap-[2px]">
+      <div className="side-panel-actions flex flex-wrap items-center justify-center gap-[2px]">
         <button
           className={`${chipBase} side-panel-action`}
           style={chipStyle(true, panelSwatchC)}

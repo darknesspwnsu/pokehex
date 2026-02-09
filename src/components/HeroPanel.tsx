@@ -74,7 +74,7 @@ export const HeroPanel = ({
             <img
               src={entry.images[paletteMode]}
               alt={entry.displayName}
-              className="hero-art-image max-h-[42vh] w-auto object-contain drop-shadow-[0_30px_45px_rgba(0,0,0,0.25)]"
+              className="hero-art-image w-auto object-contain drop-shadow-[0_30px_45px_rgba(0,0,0,0.25)]"
               loading="lazy"
             />
           ) : (
