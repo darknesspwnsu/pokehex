@@ -18,7 +18,7 @@ const ResultCardComponent = ({
   isActive,
   onSelect,
 }: ResultCardProps) => {
-  const swatches = entry.palettes[paletteMode].swatches
+  const swatches = entry.palettes[paletteMode].swatches.slice(0, 3)
   const cardSwatchA = swatches[0]?.hex ?? dominantHex
   const cardSwatchB = swatches[1]?.hex ?? cardSwatchA
   const cardSwatchC = swatches[2]?.hex ?? cardSwatchB

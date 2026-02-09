@@ -37,7 +37,7 @@ export const SidePanelHistory = ({
               onClick={() => onSelectName(entry.name)}
             >
               <span className="side-panel-history-swatches flex gap-[2px]">
-                {entry.palettes[paletteMode].swatches.map((swatch) => (
+              {entry.palettes[paletteMode].swatches.slice(0, 3).map((swatch) => (
                   <span
                     key={`${entry.name}-${swatch.hex}`}
                     className="side-panel-history-dot h-3 w-3 rounded-full"
