@@ -61,7 +61,7 @@ export const Header = ({ isMobileNavOpen, onToggleMobileNav }: HeaderProps) => {
       <div className="navbar-actions flex items-center gap-3">
         <a
           className="navbar-github"
-          href="https://github.com/darknesspwnsu/pokehex.github.io"
+          href="https://github.com/darknesspwnsu/pokehex"
           target="_blank"
           rel="noreferrer"
           aria-label="View repository on GitHub"

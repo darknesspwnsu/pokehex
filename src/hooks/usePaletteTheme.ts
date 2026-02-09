@@ -25,7 +25,7 @@ export const usePaletteTheme = (
 ): PaletteTheme => {
   return useMemo(() => {
     const activeSwatches = activeEntry?.palettes[paletteMode].swatches ?? []
-    const dominantHex = activeSwatches[0]?.hex ?? '#F6E6B4'
+    const dominantHex = activeSwatches[0]?.hex ?? '#F8F8F8'
     const dominantText = getContrastColor(dominantHex)
     const dominantMuted =
       dominantText === '#0B0D11'

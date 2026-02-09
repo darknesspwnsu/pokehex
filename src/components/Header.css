@@ -136,6 +136,12 @@
   }
 }
 
+@media (min-width: 769px) {
+  .navbar-toggle {
+    display: none !important;
+  }
+}
+
 .theme-toggle {
   --toggle-width: 88px;
   --toggle-height: 40px;
@@ -205,7 +211,7 @@
 }
 
 :root.dark .theme-toggle-knob {
-  transform: translateX(calc(100% - var(--toggle-knob) - var(--toggle-padding) * 2));
+  transform: translateX(calc(var(--toggle-width) - var(--toggle-knob) - var(--toggle-padding) * 2));
 }
 
 :root.dark .theme-toggle-sun {
