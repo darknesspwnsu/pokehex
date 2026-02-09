@@ -12,6 +12,7 @@ export const ThemeToggle = ({ theme, onToggle }: ThemeToggleProps) => {
       aria-label="Toggle dark mode"
       onClick={onToggle}
       className="theme-toggle"
+      data-theme={theme}
     >
       <span className="theme-toggle-track" />
       <span className="theme-toggle-icon theme-toggle-sun">
