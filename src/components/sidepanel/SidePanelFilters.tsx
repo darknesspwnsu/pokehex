@@ -1,3 +1,4 @@
+import './SidePanel.css'
 import type { CSSProperties } from 'react'
 
 import { FORM_FILTERS, TYPE_COLORS } from '../../lib/constants'

@@ -1,5 +1,6 @@
-import type { PaletteSwatch } from '../lib/types'
-import { SwatchCard } from './swatch/SwatchCard'
+import './SwatchGrid.css'
+import type { PaletteSwatch } from '../../lib/types'
+import { SwatchCard } from './SwatchCard'
 
 type SwatchGridProps = {
   entryName: string

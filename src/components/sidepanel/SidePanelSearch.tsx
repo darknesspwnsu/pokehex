@@ -1,3 +1,4 @@
+import './SidePanel.css'
 import type { CSSProperties } from 'react'
 
 import { getContrastColor } from '../../lib/ui'

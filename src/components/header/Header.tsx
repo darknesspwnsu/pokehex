@@ -1,5 +1,6 @@
-import logo from '../assets/logo.png'
-import logoText from '../assets/logo-text.png'
+import './Header.css'
+import logo from '../../assets/logo.png'
+import logoText from '../../assets/logo-text.png'
 
 type HeaderProps = {
   isMobileNavOpen: boolean

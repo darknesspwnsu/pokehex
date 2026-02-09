@@ -1,3 +1,4 @@
+import './ResultsPanel.css'
 import { buttonBase } from '../styles'
 
 type ResultsLoadMoreProps = {

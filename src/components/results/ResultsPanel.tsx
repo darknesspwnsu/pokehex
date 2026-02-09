@@ -1,8 +1,9 @@
-import { cardBase } from './styles'
-import type { PaletteMode, PokemonEntry } from '../lib/types'
-import { ResultCard } from './results/ResultCard'
-import { ResultsHeader } from './results/ResultsHeader'
-import { ResultsLoadMore } from './results/ResultsLoadMore'
+import './ResultsPanel.css'
+import { cardBase } from '../styles'
+import type { PaletteMode, PokemonEntry } from '../../lib/types'
+import { ResultCard } from './ResultCard'
+import { ResultsHeader } from './ResultsHeader'
+import { ResultsLoadMore } from './ResultsLoadMore'
 
 type ResultsPanelProps = {
   entries: PokemonEntry[]

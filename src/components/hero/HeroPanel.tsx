@@ -1,8 +1,9 @@
+import './HeroPanel.css'
 import { motion } from 'framer-motion'
 
-import { TYPE_COLORS } from '../lib/constants'
-import { formatDex, getContrastColor, toRgba } from '../lib/ui'
-import type { PaletteMode, PokemonEntry } from '../lib/types'
+import { TYPE_COLORS } from '../../lib/constants'
+import { formatDex, getContrastColor, toRgba } from '../../lib/ui'
+import type { PaletteMode, PokemonEntry } from '../../lib/types'
 
 type HeroPanelProps = {
   entry: PokemonEntry

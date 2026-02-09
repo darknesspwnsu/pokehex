@@ -1,10 +1,11 @@
+import './SidePanel.css'
 import type { CSSProperties } from 'react'
 
-import type { FormTag, PaletteMode, PokemonEntry } from '../lib/types'
-import { SidePanelFilters } from './sidepanel/SidePanelFilters'
-import { SidePanelHistory } from './sidepanel/SidePanelHistory'
-import { SidePanelSearch } from './sidepanel/SidePanelSearch'
-import { SidePanelSelected } from './sidepanel/SidePanelSelected'
+import type { FormTag, PaletteMode, PokemonEntry } from '../../lib/types'
+import { SidePanelFilters } from './SidePanelFilters'
+import { SidePanelHistory } from './SidePanelHistory'
+import { SidePanelSearch } from './SidePanelSearch'
+import { SidePanelSelected } from './SidePanelSelected'
 
 type SidePanelProps = {
   panelStyle: CSSProperties

@@ -1,3 +1,4 @@
+import './Toast.css'
 import { createPortal } from 'react-dom'
 
 type ToastProps = {

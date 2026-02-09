@@ -1,6 +1,7 @@
-import { toBadgeHtml, toCssVariables, toHexList, toPaletteJson } from '../lib/exports'
-import type { PaletteMode, PokemonEntry } from '../lib/types'
-import { actionButton, cardBase } from './styles'
+import './ExportPanel.css'
+import { toBadgeHtml, toCssVariables, toHexList, toPaletteJson } from '../../lib/exports'
+import type { PaletteMode, PokemonEntry } from '../../lib/types'
+import { actionButton, cardBase } from '../styles'
 
 type ExportPanelProps = {
   entry: PokemonEntry

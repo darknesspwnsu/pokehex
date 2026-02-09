@@ -1,3 +1,4 @@
+import './SwatchGrid.css'
 import { getContrastColor } from '../../lib/ui'
 import type { PaletteSwatch } from '../../lib/types'
 

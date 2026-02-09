@@ -1,3 +1,4 @@
+import './Header.css'
 type ThemeToggleProps = {
   theme: 'light' | 'dark'
   onToggle: () => void

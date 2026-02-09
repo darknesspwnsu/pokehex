@@ -1,3 +1,4 @@
+import './SidePanel.css'
 import { TYPE_COLORS } from '../../lib/constants'
 import { formatDex, getContrastColor } from '../../lib/ui'
 import type { PokemonEntry } from '../../lib/types'

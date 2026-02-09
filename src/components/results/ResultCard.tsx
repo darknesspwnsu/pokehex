@@ -1,3 +1,4 @@
+import './ResultsPanel.css'
 import { memo } from 'react'
 
 import type { PaletteMode, PokemonEntry } from '../../lib/types'
