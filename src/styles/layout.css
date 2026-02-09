@@ -100,7 +100,7 @@ body::before {
   border-top: 3px solid #000;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 769px) {
   body {
     overflow: hidden;
   }
