@@ -4,6 +4,48 @@
   contain: content;
 }
 
+.result-card-button {
+  position: relative;
+  transform: translateZ(0);
+  transition:
+    transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    filter 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: transform;
+}
+
+.result-card-button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.14);
+  opacity: 0;
+  transition: opacity 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  .result-card-button:hover {
+    transform: translate3d(0, -2px, 0) scale(1.005);
+    filter: brightness(1.02) saturate(1.01);
+  }
+
+  .result-card-button:hover::after {
+    opacity: 0.6;
+  }
+
+  .result-card-button:active {
+    transform: translate3d(0, 0, 0) scale(0.99);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .result-card-button {
+    transition: none;
+  }
+}
+
 .result-card-image {
   position: relative;
   height: 100px;

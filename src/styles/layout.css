@@ -218,9 +218,6 @@ body::before {
     gap: 12px;
   }
 
-  .intro-banner > :not([hidden]) ~ :not([hidden]) {
-    margin-top: 0 !important;
-  }
 
   .intro-title {
     font-size: 24px;

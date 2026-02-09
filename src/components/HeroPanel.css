@@ -21,7 +21,7 @@
 
 @media (max-width: 768px) {
   .hero-panel {
-    height: 30vh;
+    height: 35vh;
   }
 
   .hero-title {
@@ -44,6 +44,6 @@
 
   .hero-art-image {
     height: auto;
-    max-height: 55vh;
+    max-height: 40vh;
   }
 }
