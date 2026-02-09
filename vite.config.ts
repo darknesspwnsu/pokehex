@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/pokehex/',
+  base: '/pokehex.github.io/',
   plugins: [react()],
   test: {
     environment: 'happy-dom',

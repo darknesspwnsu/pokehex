@@ -20,7 +20,8 @@ export const usePokemonIndex = (): UsePokemonIndexResult => {
 
     const loadIndex = async () => {
       try {
-        const response = await fetch('/data/pokemon-index.json')
+        const url = new URL('data/pokemon-index.json', import.meta.env.BASE_URL)
+        const response = await fetch(url)
         if (!response.ok) {
           throw new Error('Failed to load Pokemon palette data.')
         }
