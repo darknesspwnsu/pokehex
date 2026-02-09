@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { Header } from './components/Header'
 import { ThemeToggle } from './components/header/ThemeToggle'
@@ -202,7 +202,10 @@ function App() {
     [entries],
   )
 
-  const visibleEntries = filteredEntries.slice(0, resultsLimit)
+  const visibleEntries = useMemo(
+    () => filteredEntries.slice(0, resultsLimit),
+    [filteredEntries, resultsLimit],
+  )
   const normalizedColor = normalizeHex(colorQuery) ?? '#F97316'
 
   const {
@@ -232,7 +235,7 @@ function App() {
     setToast(success ? buildToast(label) : 'Unable to copy to clipboard.')
   }
 
-  const handleSurprise = () => {
+  const handleSurprise = useCallback(() => {
     if (filteredEntries.length === 0) {
       return
     }
@@ -243,13 +246,17 @@ function App() {
       setMobileNavOpen(false)
       setHasSeededSelection(true)
     }
-  }
+  }, [filteredEntries])
 
-  const handleSelectName = (name: string) => {
+  const handleSelectName = useCallback((name: string) => {
     setSelectedName(name)
     setMobileNavOpen(false)
     setHasSeededSelection(true)
-  }
+  }, [])
+
+  const handleLoadMore = useCallback(() => {
+    setResultsLimit((prev) => Math.min(prev + 60, filteredEntries.length))
+  }, [filteredEntries.length])
 
   return (
     <div
@@ -375,12 +382,8 @@ function App() {
               paletteMode={paletteMode}
               dominantHex={dominantHex}
               canLoadMore={visibleEntries.length < filteredEntries.length}
-              onSelect={setSelectedName}
-              onLoadMore={() =>
-                setResultsLimit((prev) =>
-                  Math.min(prev + 60, filteredEntries.length),
-                )
-              }
+              onSelect={handleSelectName}
+              onLoadMore={handleLoadMore}
             />
           </section>
         </div>

@@ -1,9 +1,11 @@
+import { memo } from 'react'
+
 type ResultsHeaderProps = {
   count: number
   totalCount: number
 }
 
-export const ResultsHeader = ({ count, totalCount }: ResultsHeaderProps) => {
+const ResultsHeaderComponent = ({ count, totalCount }: ResultsHeaderProps) => {
   return (
     <div className="results-header flex items-center justify-between">
       <h2 className="results-title text-sm font-semibold uppercase tracking-[0.1em]">
@@ -15,3 +17,7 @@ export const ResultsHeader = ({ count, totalCount }: ResultsHeaderProps) => {
     </div>
   )
 }
+
+ResultsHeaderComponent.displayName = 'ResultsHeader'
+
+export const ResultsHeader = memo(ResultsHeaderComponent)
