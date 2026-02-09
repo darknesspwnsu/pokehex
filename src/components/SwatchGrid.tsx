@@ -15,7 +15,7 @@ export const SwatchGrid = ({
   onCopyHex,
 }: SwatchGridProps) => {
   return (
-    <div className="swatch-grid swatch-grid-shell grid grid-cols-3 gap-4 layout-swatch">
+    <div className="swatch-grid swatch-grid-shell grid grid-cols-3 gap-0 layout-swatch">
       {swatches.map((swatch) => {
         const percentage = totalPopulation
           ? Math.round((swatch.population / totalPopulation) * 100)

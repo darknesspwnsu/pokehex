@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Header } from './components/Header'
+import { ThemeToggle } from './components/header/ThemeToggle'
 import { HeroPanel } from './components/HeroPanel'
 import { SidePanel } from './components/SidePanel'
 import { SwatchGrid } from './components/SwatchGrid'
@@ -54,10 +55,63 @@ function App() {
   const [selectedName, setSelectedName] = useState<string | null>(null)
   const [resultsLimit, setResultsLimit] = useState(60)
   const [toast, setToast] = useState<string | null>(null)
+  const [isMobileNavOpen, setMobileNavOpen] = useState(false)
+  const hasRandomizedSelection = useRef(false)
+  const skipNextAutoSelect = useRef(false)
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')
   }, [theme])
+
+  useEffect(() => {
+    if (hasRandomizedSelection.current || entries.length === 0) {
+      return
+    }
+
+    const random = entries[Math.floor(Math.random() * entries.length)]
+    if (random) {
+      skipNextAutoSelect.current = true
+      hasRandomizedSelection.current = true
+      setSelectedName(random.name)
+      setPaletteMode(Math.random() < 0.2 ? 'shiny' : 'normal')
+    }
+  }, [entries, setPaletteMode])
+
+  useEffect(() => {
+    if (!isMobileNavOpen) {
+      document.body.style.overflow = ''
+      return
+    }
+
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [isMobileNavOpen])
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setMobileNavOpen(false)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  useEffect(() => {
+    if (!isMobileNavOpen) {
+      return
+    }
+
+    const handleKeydown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMobileNavOpen(false)
+      }
+    }
+    window.addEventListener('keydown', handleKeydown)
+    return () => window.removeEventListener('keydown', handleKeydown)
+  }, [isMobileNavOpen])
 
   const debouncedQuery = useDebouncedValue(query, 250)
   const debouncedColorQuery = useDebouncedValue(colorQuery, 250)
@@ -113,7 +167,16 @@ function App() {
   }, [filteredEntries, selectedName, entryMap])
 
   useEffect(() => {
-    if (activeEntry && activeEntry.name !== selectedName) {
+    if (!activeEntry) {
+      return
+    }
+
+    if (skipNextAutoSelect.current) {
+      skipNextAutoSelect.current = false
+      return
+    }
+
+    if (activeEntry.name !== selectedName) {
       setSelectedName(activeEntry.name)
     }
   }, [activeEntry, selectedName])
@@ -175,7 +238,13 @@ function App() {
     const random = filteredEntries[Math.floor(Math.random() * filteredEntries.length)]
     if (random) {
       setSelectedName(random.name)
+      setMobileNavOpen(false)
     }
+  }
+
+  const handleSelectName = (name: string) => {
+    setSelectedName(name)
+    setMobileNavOpen(false)
   }
 
   return (
@@ -184,12 +253,12 @@ function App() {
       style={pageStyle}
     >
       <Header
-        theme={theme}
-        onToggleTheme={() => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))}
+        isMobileNavOpen={isMobileNavOpen}
+        onToggleMobileNav={() => setMobileNavOpen((prev) => !prev)}
       />
 
       <section className="intro-banner mx-auto w-full max-w-7xl space-y-2 px-0">
-        <h1 className="intro-title font-display text-4xl leading-tight text-[var(--page-ink)] sm:text-5xl">
+        <h1 className="intro-title m-0 font-display text-4xl leading-tight text-[var(--page-ink)] sm:text-5xl">
           Official-art palettes for every Pokemon form.
         </h1>
         <p className="intro-subtitle max-w-3xl text-sm text-[var(--page-ink-muted)] sm:text-base">
@@ -199,50 +268,59 @@ function App() {
 
       <main className="main-shell app-main flex min-h-0 w-full flex-1 px-0">
         <div className="app-layout grid h-full min-h-0 grid-cols-[340px_1fr] gap-8 layout-shell">
-          <SidePanel
-            panelStyle={panelStyle}
-            activeEntry={activeEntry}
-            paletteMode={paletteMode}
-            searchMode={searchMode}
-            query={query}
-            colorQuery={colorQuery}
-            normalizedColor={normalizedColor}
-            filteredCount={filteredEntries.length}
-            generationOptions={generationOptions}
-            selectedGenerations={selectedGenerations}
-            typeOptions={typeOptions}
-            selectedTypes={selectedTypes}
-            selectedForms={selectedForms}
-            historyEntries={historyEntries}
-            panelSwatchA={panelSwatchA}
-            panelSwatchB={panelSwatchB}
-            panelSwatchC={panelSwatchC}
-            chipStyle={chipStyle}
-            onSearchModeChange={setSearchMode}
-            onQueryChange={setQuery}
-            onClearQuery={clearQuery}
-            onColorChange={setColorQuery}
-            onResetColor={resetColorQuery}
-            onColorBlur={() => {
-              const normalized = normalizeHex(colorQuery)
-              if (normalized) {
-                setColorQuery(normalized)
+          <div className={`side-panel-wrapper ${isMobileNavOpen ? 'is-open' : ''}`}>
+            <button
+              type="button"
+              className="side-panel-overlay"
+              aria-hidden={!isMobileNavOpen}
+              onClick={() => setMobileNavOpen(false)}
+            />
+            <SidePanel
+              panelStyle={panelStyle}
+              activeEntry={activeEntry}
+              paletteMode={paletteMode}
+              searchMode={searchMode}
+              query={query}
+              colorQuery={colorQuery}
+              normalizedColor={normalizedColor}
+              filteredCount={filteredEntries.length}
+              generationOptions={generationOptions}
+              selectedGenerations={selectedGenerations}
+              typeOptions={typeOptions}
+              selectedTypes={selectedTypes}
+              selectedForms={selectedForms}
+              historyEntries={historyEntries}
+              panelSwatchA={panelSwatchA}
+              panelSwatchB={panelSwatchB}
+              panelSwatchC={panelSwatchC}
+              chipStyle={chipStyle}
+              onSearchModeChange={setSearchMode}
+              onQueryChange={setQuery}
+              onClearQuery={clearQuery}
+              onColorChange={setColorQuery}
+              onResetColor={resetColorQuery}
+              onColorBlur={() => {
+                const normalized = normalizeHex(colorQuery)
+                if (normalized) {
+                  setColorQuery(normalized)
+                }
+              }}
+              onPaletteModeChange={setPaletteMode}
+              onSurprise={handleSurprise}
+              onToggleGeneration={(gen) =>
+                setSelectedGenerations((prev) => toggleValue(gen, prev))
               }
-            }}
-            onPaletteModeChange={setPaletteMode}
-            onSurprise={handleSurprise}
-            onToggleGeneration={(gen) =>
-              setSelectedGenerations((prev) => toggleValue(gen, prev))
-            }
-            onToggleType={(type) =>
-              setSelectedTypes((prev) => toggleValue(type, prev))
-            }
-            onToggleForm={(form) =>
-              setSelectedForms((prev) => toggleValue(form, prev))
-            }
-            onClearFilters={clearFilters}
-            onSelectName={setSelectedName}
-          />
+              onToggleType={(type) =>
+                setSelectedTypes((prev) => toggleValue(type, prev))
+              }
+              onToggleForm={(form) =>
+                setSelectedForms((prev) => toggleValue(form, prev))
+              }
+              onClearFilters={clearFilters}
+              onSelectName={handleSelectName}
+              onClose={() => setMobileNavOpen(false)}
+            />
+          </div>
 
           <section className="content-column app-content flex min-h-0 flex-1 flex-col gap-7">
             {loading ? (
@@ -294,9 +372,15 @@ function App() {
         </div>
       </main>
 
-      <footer className="site-footer w-full text-xs uppercase tracking-[0.3em] text-[var(--page-ink-muted)]">
-        © {new Date().getFullYear()} Poke Hexcolor. All Pokemon artwork and
-        trademarks belong to their respective owners.
+      <footer className="site-footer w-full text-[10px] uppercase tracking-[0.2em] text-[var(--page-ink-muted)]">
+        <span>
+          © {new Date().getFullYear()} Poke Hexcolor. All Pokemon artwork and
+          trademarks belong to their respective owners.
+        </span>
+        <ThemeToggle
+          theme={theme}
+          onToggle={() => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))}
+        />
       </footer>
 
       <Toast toast={toast} />

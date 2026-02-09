@@ -20,6 +20,22 @@
 }
 
 @media (max-width: 768px) {
+  .hero-panel {
+    height: 30vh;
+  }
+
+  .hero-title {
+    font-size: 28px;
+  }
+
+  .hero-meta {
+    font-size: 13px;
+  }
+
+  .hero-kicker {
+    letter-spacing: 0.2em;
+  }
+
   .hero-art {
     flex: 1 1 auto;
     max-width: 100%;

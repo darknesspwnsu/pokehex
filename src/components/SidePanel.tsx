@@ -38,6 +38,7 @@ type SidePanelProps = {
   onToggleForm: (form: FormTag) => void
   onClearFilters: () => void
   onSelectName: (name: string) => void
+  onClose?: () => void
 }
 
 export const SidePanel = ({
@@ -72,10 +73,28 @@ export const SidePanel = ({
   onToggleForm,
   onClearFilters,
   onSelectName,
+  onClose,
 }: SidePanelProps) => {
   return (
-    <aside className="side-panel rounded-none shadow-float backdrop-blur" style={panelStyle}>
+    <aside
+      id="side-panel-drawer"
+      className="side-panel rounded-none shadow-float backdrop-blur"
+      style={panelStyle}
+    >
       <div className="side-panel-content space-y-8">
+        {onClose ? (
+          <div className="side-panel-mobile-header">
+            <span className="side-panel-mobile-title">Filters</span>
+            <button
+              type="button"
+              className="side-panel-close"
+              onClick={onClose}
+              aria-label="Close filters"
+            >
+              ×
+            </button>
+          </div>
+        ) : null}
         <SidePanelSelected activeEntry={activeEntry} />
         <SidePanelSearch
           searchMode={searchMode}

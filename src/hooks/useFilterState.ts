@@ -1,24 +1,24 @@
-import { useState } from 'react'
+import { useState, type Dispatch, type SetStateAction } from 'react'
 
 import type { FormTag, PaletteMode } from '../lib/types'
 
 type FilterState = {
   searchMode: 'name' | 'color'
-  setSearchMode: (mode: 'name' | 'color') => void
+  setSearchMode: Dispatch<SetStateAction<'name' | 'color'>>
   query: string
-  setQuery: (value: string) => void
+  setQuery: Dispatch<SetStateAction<string>>
   clearQuery: () => void
   colorQuery: string
-  setColorQuery: (value: string) => void
+  setColorQuery: Dispatch<SetStateAction<string>>
   resetColorQuery: () => void
   paletteMode: PaletteMode
-  setPaletteMode: (mode: PaletteMode) => void
+  setPaletteMode: Dispatch<SetStateAction<PaletteMode>>
   selectedTypes: string[]
-  setSelectedTypes: (types: string[]) => void
+  setSelectedTypes: Dispatch<SetStateAction<string[]>>
   selectedGenerations: number[]
-  setSelectedGenerations: (gens: number[]) => void
+  setSelectedGenerations: Dispatch<SetStateAction<number[]>>
   selectedForms: FormTag[]
-  setSelectedForms: (forms: FormTag[]) => void
+  setSelectedForms: Dispatch<SetStateAction<FormTag[]>>
   clearFilters: () => void
 }
 

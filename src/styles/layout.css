@@ -10,6 +10,13 @@
   position: relative;
 }
 
+.site-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 body::before {
   content: '';
   position: fixed;
@@ -60,6 +67,7 @@ body::before {
     height: 100%;
     min-height: 0;
     overflow: hidden;
+    gap: 16px;
   }
 
   .side-panel {
@@ -78,18 +86,81 @@ body::before {
 }
 
 @media (max-width: 768px) {
-  .layout-header {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-  }
-
-  .layout-shell,
-  .layout-swatch {
+  .layout-shell {
     grid-template-columns: 1fr !important;
   }
 
   .layout-hero {
-    flex-direction: column !important;
-    align-items: flex-start !important;
+    flex-direction: row !important;
+  }
+
+  body {
+    overflow: hidden;
+  }
+
+  .app-shell {
+    height: 100vh;
+    overflow: hidden;
+    padding: 0 !important;
+    gap: 12px;
+  }
+
+  .main-shell {
+    height: 100%;
+    min-height: 0;
+    flex: 1;
+  }
+
+  .layout-shell {
+    height: 100%;
+    min-height: 0;
+    width: 100%;
+    gap: 16px;
+  }
+
+  .content-column {
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .results-panel {
+    min-height: 0;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .results-scroll {
+    height: 100%;
+  }
+
+  .app-hero-stack {
+    gap: 12px;
+  }
+
+  .app-hero-stack > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 12px !important;
+  }
+
+  .layout-swatch {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .intro-banner {
+    padding: 0 16px;
+  }
+
+  .intro-title {
+    font-size: 24px;
+    margin: 0;
+  }
+
+  .intro-subtitle {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .site-footer {
+    padding: 0 16px 16px;
   }
 }

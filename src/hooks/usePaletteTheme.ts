@@ -1,10 +1,10 @@
 import { useMemo, type CSSProperties } from 'react'
 
 import { getContrastColor, mixHex, toRgba } from '../lib/ui'
-import type { PaletteMode, PokemonEntry } from '../lib/types'
+import type { PaletteMode, PaletteSwatch, PokemonEntry } from '../lib/types'
 
 type PaletteTheme = {
-  activeSwatches: { hex: string; population: number }[]
+  activeSwatches: PaletteSwatch[]
   dominantHex: string
   dominantText: string
   dominantMuted: string

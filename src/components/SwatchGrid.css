@@ -1,3 +1,9 @@
 .swatch-button {
   height: 100px;
 }
+
+@media (max-width: 768px) {
+  .swatch-button {
+    height: 72px;
+  }
+}

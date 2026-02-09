@@ -3,6 +3,7 @@
   background: rgba(255, 255, 255, 0.18);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
   backdrop-filter: blur(18px);
+  flex-wrap: nowrap;
 }
 
 :root.dark .navbar-shell {
@@ -12,6 +13,8 @@
 
 .navbar-brand {
   gap: 16px;
+  min-width: 0;
+  white-space: nowrap;
 }
 
 .navbar-logo {
@@ -22,6 +25,7 @@
   background: rgba(255, 255, 255, 0.25);
   padding: 6px;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+  flex-shrink: 0;
 }
 
 :root.dark .navbar-logo {
@@ -29,16 +33,101 @@
   box-shadow: inset 0 0 0 1px rgba(248, 247, 242, 0.18);
 }
 
+.navbar-title {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
 .navbar-logo-image {
   height: 46px;
   width: auto;
+  max-width: none;
   display: block;
+  flex-shrink: 0;
+  object-fit: contain;
 }
 
 .navbar-logo-text {
   height: 22px;
   width: auto;
+  max-width: none;
   display: block;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.navbar-actions {
+  gap: 12px;
+}
+
+.navbar-toggle {
+  display: none;
+  border: 1px solid var(--page-stroke);
+  background: var(--page-surface-strong);
+  color: var(--page-ink);
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+}
+
+:root.dark .navbar-toggle {
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.35);
+}
+
+.navbar-github {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--page-stroke);
+  background: var(--page-surface-strong);
+  color: var(--page-ink);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.navbar-github:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.2);
+}
+
+:root.dark .navbar-github {
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.35);
+}
+
+@media (max-width: 768px) {
+  .navbar-shell {
+    padding: 12px 16px;
+  }
+
+  .navbar-brand {
+    gap: 10px;
+  }
+
+  .navbar-logo-image {
+    height: 40px;
+  }
+
+  .navbar-logo-text {
+    height: 18px;
+  }
+
+  .navbar-gen {
+    display: none;
+  }
+
+  .navbar-toggle {
+    display: grid;
+  }
+
+  .navbar-actions {
+    gap: 10px;
+  }
 }
 
 .theme-toggle {
