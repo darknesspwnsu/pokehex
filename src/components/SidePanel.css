@@ -188,7 +188,7 @@
     height: 100%;
     width: min(92vw, 360px);
     transform: translateX(-105%);
-    transition: transform 0.25s ease;
+    transition: transform 0.32s ease-in;
     pointer-events: auto;
     z-index: 1;
     border-right: none;
@@ -197,6 +197,7 @@
 
   .side-panel-wrapper.is-open .side-panel {
     transform: translateX(0);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .side-panel-mobile-header {

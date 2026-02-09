@@ -9,18 +9,7 @@ type HeaderProps = {
 export const Header = ({ isMobileNavOpen, onToggleMobileNav }: HeaderProps) => {
   return (
     <header className="site-header navbar-shell layout-header flex w-full items-center justify-between rounded-none px-6 py-4 sm:px-8">
-      <div className="navbar-brand flex items-center gap-4 text-xs uppercase tracking-[0.3em] text-[var(--page-ink-muted)]">
-        <div className="navbar-logo">
-          <img src={logo} alt="Poke Hexcolor" className="navbar-logo-image" />
-        </div>
-        <div className="navbar-title">
-          <img src={logoText} alt="Poke Hexcolor" className="navbar-logo-text" />
-        </div>
-        <span className="navbar-gen rounded-full border border-[var(--page-stroke)] bg-[var(--page-surface-strong)] px-3 py-1 text-[10px] tracking-[0.3em] text-[var(--page-ink)]">
-          Gen 1-9
-        </span>
-      </div>
-      <div className="navbar-actions flex items-center gap-3">
+      <div className="navbar-left flex items-center gap-3">
         <button
           type="button"
           className="navbar-toggle md:hidden"
@@ -57,6 +46,19 @@ export const Header = ({ isMobileNavOpen, onToggleMobileNav }: HeaderProps) => {
             </svg>
           )}
         </button>
+        <div className="navbar-brand flex items-center gap-4 text-xs uppercase tracking-[0.3em] text-[var(--page-ink-muted)]">
+          <div className="navbar-logo">
+            <img src={logo} alt="Poke Hexcolor" className="navbar-logo-image" />
+          </div>
+          <div className="navbar-title">
+            <img src={logoText} alt="Poke Hexcolor" className="navbar-logo-text" />
+          </div>
+          <span className="navbar-gen rounded-full border border-[var(--page-stroke)] bg-[var(--page-surface-strong)] px-3 py-1 text-[10px] tracking-[0.3em] text-[var(--page-ink)]">
+            Gen 1-9
+          </span>
+        </div>
+      </div>
+      <div className="navbar-actions flex items-center gap-3">
         <a
           className="navbar-github"
           href="https://github.com/pokehex/pokehex.github.io"

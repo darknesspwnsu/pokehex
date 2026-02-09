@@ -6,6 +6,12 @@
   flex-wrap: nowrap;
 }
 
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 :root.dark .navbar-shell {
   background: rgba(16, 20, 28, 0.6);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.35);
@@ -199,7 +205,7 @@
 }
 
 :root.dark .theme-toggle-knob {
-  transform: translateX(calc(var(--toggle-width) - var(--toggle-knob) - var(--toggle-padding) * 2));
+  transform: translateX(calc(100% - var(--toggle-knob) - var(--toggle-padding) * 2));
 }
 
 :root.dark .theme-toggle-sun {
