@@ -17,6 +17,64 @@
   gap: 16px;
 }
 
+.site-footer .theme-toggle {
+  --toggle-width: 72px;
+  --toggle-height: 30px;
+  --toggle-padding: 3px;
+}
+
+.intro-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.intro-tooltip {
+  position: relative;
+  display: none;
+  align-items: center;
+}
+
+.intro-tooltip-button {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  border: 1px solid var(--page-stroke);
+  background: var(--page-surface-strong);
+  color: var(--page-ink);
+  font-size: 12px;
+  font-weight: 600;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+
+.intro-tooltip-text {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 8px);
+  width: min(320px, 70vw);
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--page-surface-strong);
+  color: var(--page-ink);
+  font-size: 12px;
+  line-height: 1.4;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 10;
+}
+
+.intro-tooltip:hover .intro-tooltip-text,
+.intro-tooltip:focus-within .intro-tooltip-text {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
 body::before {
   content: '';
   position: fixed;
@@ -138,9 +196,6 @@ body::before {
     gap: 12px;
   }
 
-  .app-hero-stack > :not([hidden]) ~ :not([hidden]) {
-    margin-top: 12px !important;
-  }
 
   .layout-swatch {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
@@ -158,6 +213,19 @@ body::before {
   .intro-subtitle {
     font-size: 13px;
     line-height: 1.4;
+  }
+
+  .intro-subtitle-text {
+    display: none;
+  }
+
+  .intro-tooltip {
+    display: inline-flex;
+  }
+
+  .intro-tooltip-text {
+    left: auto;
+    right: 0;
   }
 
   .site-footer {

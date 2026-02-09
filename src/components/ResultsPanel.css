@@ -41,3 +41,17 @@
   align-items: center;
   gap: 6px;
 }
+
+.results-title {
+  margin: 0;
+}
+
+.results-header {
+  margin-bottom: 12px;
+}
+
+@media (max-width: 768px) {
+  .results-header {
+    margin-bottom: 6px;
+  }
+}

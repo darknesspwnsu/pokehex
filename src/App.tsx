@@ -56,6 +56,7 @@ function App() {
   const [resultsLimit, setResultsLimit] = useState(60)
   const [toast, setToast] = useState<string | null>(null)
   const [isMobileNavOpen, setMobileNavOpen] = useState(false)
+  const [hasSeededSelection, setHasSeededSelection] = useState(false)
   const hasRandomizedSelection = useRef(false)
   const skipNextAutoSelect = useRef(false)
 
@@ -73,6 +74,7 @@ function App() {
       skipNextAutoSelect.current = true
       hasRandomizedSelection.current = true
       setSelectedName(random.name)
+      setHasSeededSelection(true)
       setPaletteMode(Math.random() < 0.2 ? 'shiny' : 'normal')
     }
   }, [entries, setPaletteMode])
@@ -152,7 +154,7 @@ function App() {
   ])
 
   const activeEntry = useMemo(() => {
-    if (filteredEntries.length === 0) {
+    if (filteredEntries.length === 0 || !hasSeededSelection) {
       return null
     }
 
@@ -164,7 +166,7 @@ function App() {
     }
 
     return filteredEntries[0]
-  }, [filteredEntries, selectedName, entryMap])
+  }, [filteredEntries, selectedName, entryMap, hasSeededSelection])
 
   useEffect(() => {
     if (!activeEntry) {
@@ -239,12 +241,14 @@ function App() {
     if (random) {
       setSelectedName(random.name)
       setMobileNavOpen(false)
+      setHasSeededSelection(true)
     }
   }
 
   const handleSelectName = (name: string) => {
     setSelectedName(name)
     setMobileNavOpen(false)
+    setHasSeededSelection(true)
   }
 
   return (
@@ -262,7 +266,17 @@ function App() {
           Official-art palettes for every Pokemon form.
         </h1>
         <p className="intro-subtitle max-w-3xl text-sm text-[var(--page-ink-muted)] sm:text-base">
-          Search by name, number, or nearest color match to reveal dominant swatches. Filter by generation, type, and form, then export clean palette snippets.
+          <span className="intro-subtitle-text">
+            Search by name, number, or nearest color match to reveal dominant swatches. Filter by generation, type, and form, then export clean palette snippets.
+          </span>
+          <span className="intro-tooltip">
+            <button type="button" className="intro-tooltip-button" aria-label="About this experience">
+              i
+            </button>
+            <span className="intro-tooltip-text">
+              Search by name, number, or nearest color match to reveal dominant swatches. Filter by generation, type, and form, then export clean palette snippets.
+            </span>
+          </span>
         </p>
       </section>
 
