@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { memo } from 'react'
 
 import type { PaletteMode, PokemonEntry } from '../../lib/types'
 import { formatDex, getContrastColor, toRgba } from '../../lib/ui'
@@ -11,7 +11,7 @@ type ResultCardProps = {
   onSelect: (name: string) => void
 }
 
-export const ResultCard = ({
+const ResultCardComponent = ({
   entry,
   paletteMode,
   dominantHex,
@@ -43,8 +43,7 @@ export const ResultCard = ({
   }
 
   return (
-    <motion.button
-      whileHover={{ y: -4 }}
+    <button
       className="result-card result-card-button group relative flex items-center gap-3 overflow-hidden rounded-md border text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--page-glow)]/60"
       style={cardStyle}
       onClick={() => onSelect(entry.name)}
@@ -93,6 +92,10 @@ export const ResultCard = ({
           ))}
         </div>
       </div>
-    </motion.button>
+    </button>
   )
 }
+
+ResultCardComponent.displayName = 'ResultCard'
+
+export const ResultCard = memo(ResultCardComponent)

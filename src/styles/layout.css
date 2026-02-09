@@ -105,6 +105,14 @@ body::before {
     overflow: hidden;
   }
 
+  body::before {
+    opacity: 0;
+  }
+
+  .backdrop-blur {
+    backdrop-filter: none !important;
+  }
+
   .app-shell {
     height: 100vh;
     overflow: hidden;
@@ -161,6 +169,7 @@ body::before {
     overflow: hidden;
     padding: 0 !important;
     gap: 4px;
+    background-attachment: scroll;
   }
 
   .main-shell {

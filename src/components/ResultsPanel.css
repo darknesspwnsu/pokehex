@@ -1,6 +1,7 @@
 .result-card {
   height: 100px;
   padding: 10px;
+  contain: content;
 }
 
 .result-card-image {
@@ -40,6 +41,11 @@
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.results-grid {
+  content-visibility: auto;
+  contain-intrinsic-size: 100px 600px;
 }
 
 .results-title {
