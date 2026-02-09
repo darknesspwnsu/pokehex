@@ -23,6 +23,28 @@
   --toggle-padding: 3px;
 }
 
+.skeleton-block {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    120deg,
+    var(--page-surface) 0%,
+    var(--page-surface-strong) 45%,
+    var(--page-surface) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.8s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: -200% 0%;
+  }
+}
+
 .intro-subtitle {
   display: flex;
   align-items: center;

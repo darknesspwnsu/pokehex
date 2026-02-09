@@ -257,6 +257,8 @@ function App() {
     setResultsLimit((prev) => Math.min(prev + 60, filteredEntries.length))
   }, [filteredEntries.length])
 
+  const isReady = !loading && !error && Boolean(activeEntry)
+
   return (
     <div
       className="app-shell app-root app-container flex min-h-screen flex-col gap-8 px-6 pb-16 pt-10 sm:px-10"
@@ -343,47 +345,63 @@ function App() {
           </div>
 
           <section className="content-column app-content flex min-h-0 flex-1 flex-col gap-7">
-            {loading ? (
-              <div className="app-state rounded-none bg-[var(--page-surface)] p-10 text-center text-sm text-[var(--page-ink-muted)] shadow-glow">
-                Loading Poke Hexcolor data...
-              </div>
-            ) : error ? (
+            {error ? (
               <div className="app-state app-error rounded-none border border-dashed border-red-400 bg-red-50 p-10 text-center text-sm text-red-700">
                 {error}
               </div>
-            ) : activeEntry ? (
+            ) : (
               <div className="app-hero-stack space-y-6">
-                <HeroPanel
-                  entry={activeEntry}
+                {isReady && activeEntry ? (
+                  <HeroPanel
+                    entry={activeEntry}
+                    paletteMode={paletteMode}
+                    dominantHex={dominantHex}
+                    dominantText={dominantText}
+                    dominantMuted={dominantMuted}
+                  />
+                ) : (
+                  <div className="hero-panel hero-skeleton skeleton-block" />
+                )}
+                {isReady && activeEntry ? (
+                  <SwatchGrid
+                    entryName={activeEntry.name}
+                    swatches={activeSwatches}
+                    totalPopulation={totalPopulation}
+                    onCopyHex={(hex) => handleCopy('hex', hex)}
+                  />
+                ) : (
+                  <div className="swatch-grid swatch-skeleton layout-swatch grid grid-cols-3 gap-0">
+                    {Array.from({ length: 3 }).map((_, index) => (
+                      <div key={`swatch-skeleton-${index}`} className="swatch-skeleton-item skeleton-block" />
+                    ))}
+                  </div>
+                )}
+                {isReady && activeEntry ? (
+                  <ExportPanel
+                    entry={activeEntry}
+                    paletteMode={paletteMode}
+                    onCopy={handleCopy}
+                  />
+                ) : (
+                  <div className="export-panel export-skeleton skeleton-block" />
+                )}
+              </div>
+            )}
+
+            {!error && (
+              <div className={`results-fade ${isReady ? 'is-ready' : ''}`}>
+                <ResultsPanel
+                  entries={visibleEntries}
+                  totalCount={filteredEntries.length}
+                  activeEntryName={activeEntry?.name ?? null}
                   paletteMode={paletteMode}
                   dominantHex={dominantHex}
-                  dominantText={dominantText}
-                  dominantMuted={dominantMuted}
-                />
-                <SwatchGrid
-                  entryName={activeEntry.name}
-                  swatches={activeSwatches}
-                  totalPopulation={totalPopulation}
-                  onCopyHex={(hex) => handleCopy('hex', hex)}
-                />
-                <ExportPanel
-                  entry={activeEntry}
-                  paletteMode={paletteMode}
-                  onCopy={handleCopy}
+                  canLoadMore={visibleEntries.length < filteredEntries.length}
+                  onSelect={handleSelectName}
+                  onLoadMore={handleLoadMore}
                 />
               </div>
-            ) : null}
-
-            <ResultsPanel
-              entries={visibleEntries}
-              totalCount={filteredEntries.length}
-              activeEntryName={activeEntry?.name ?? null}
-              paletteMode={paletteMode}
-              dominantHex={dominantHex}
-              canLoadMore={visibleEntries.length < filteredEntries.length}
-              onSelect={handleSelectName}
-              onLoadMore={handleLoadMore}
-            />
+            )}
           </section>
         </div>
       </main>

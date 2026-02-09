@@ -90,6 +90,27 @@
   contain-intrinsic-size: 100px 600px;
 }
 
+.results-fade {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 220ms ease, transform 220ms ease;
+  pointer-events: none;
+}
+
+.results-fade.is-ready {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.results-fade .results-panel {
+  flex: 1;
+  min-height: 0;
+}
+
 .results-title {
   margin: 0;
 }

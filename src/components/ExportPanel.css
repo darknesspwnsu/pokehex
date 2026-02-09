@@ -3,6 +3,10 @@
   padding: 16px 0;
 }
 
+.export-skeleton {
+  min-height: 120px;
+}
+
 @media (max-width: 768px) {
   .export-label {
     padding: 8px 0;
