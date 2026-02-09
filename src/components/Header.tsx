@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 
 import { buttonBase } from './styles'
 import { ThemeToggle } from './header/ThemeToggle'
+import logo from '../assets/logo.png'
 
 type HeaderProps = {
   theme: 'light' | 'dark'
@@ -13,7 +14,9 @@ export const Header = ({ theme, onToggleTheme }: HeaderProps) => {
     <header className="site-header header-shell flex w-full flex-col gap-5 rounded-none bg-[var(--page-surface)] px-6 py-5 shadow-sm backdrop-blur layout-header sm:px-8">
       <div className="header-top flex flex-wrap items-center justify-between gap-4">
         <div className="header-brand flex items-center gap-4 text-xs uppercase tracking-[0.4em] text-[var(--page-ink-muted)]">
-          <span className="header-logo">Poke Hexcolor</span>
+          <div className="header-logo">
+            <img src={logo} alt="Poke Hexcolor" className="header-logo-image" />
+          </div>
           <span className="header-gen rounded-full border border-[var(--page-stroke)] bg-[var(--page-surface-strong)] px-3 py-1 text-[10px] tracking-[0.35em] text-[var(--page-ink)]">
             Gen 1-9
           </span>

@@ -6,3 +6,13 @@
 .hero-content {
   height: 100%;
 }
+
+.hero-art {
+  height: 100%;
+}
+
+.hero-art-image {
+  height: 80%;
+  max-height: 100%;
+  width: auto;
+}

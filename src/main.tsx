@@ -8,6 +8,7 @@ import './components/HeroPanel.css'
 import './components/SwatchGrid.css'
 import './components/ExportPanel.css'
 import './components/ResultsPanel.css'
+import './components/Toast.css'
 import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
