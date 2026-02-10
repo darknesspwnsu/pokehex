@@ -18,7 +18,7 @@ import { useHistoryList } from './hooks/useHistoryList'
 import { usePaletteTheme } from './hooks/usePaletteTheme'
 import { usePokemonIndex } from './hooks/usePokemonIndex'
 import { useDebouncedValue } from './hooks/useDebouncedValue'
-import { toPng } from 'html-to-image'
+import { toBlob } from 'html-to-image'
 
 import { copyToClipboard, getContrastColor, toRgba, toggleValue } from './lib/ui'
 
@@ -65,10 +65,27 @@ function App() {
   const hasRandomizedSelection = useRef(false)
   const skipNextAutoSelect = useRef(false)
   const urlSync = useRef({ initialized: false, skipNext: false, ignoreHashChange: false })
+  const decodedHeroImages = useRef(new Set<string>())
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')
   }, [theme])
+
+  const preloadHeroImage = useCallback(async (url?: string) => {
+    if (!url || decodedHeroImages.current.has(url)) {
+      return
+    }
+    decodedHeroImages.current.add(url)
+    const img = new Image()
+    img.src = url
+    if (img.decode) {
+      try {
+        await img.decode()
+      } catch (error) {
+        // Ignore decode errors; export can still proceed.
+      }
+    }
+  }, [])
 
   const getCurrentSlug = useCallback(() => {
     if (typeof window === 'undefined') {
@@ -138,6 +155,7 @@ function App() {
       setPaletteMode(Math.random() < 0.2 ? 'shiny' : 'normal')
     }
   }, [entries, entrySlugMap, getCurrentSlug, parseSlug, setPaletteMode])
+
 
   useEffect(() => {
     if (!isMobileNavOpen) {
@@ -258,6 +276,13 @@ function App() {
     if (!activeEntry) {
       return
     }
+    void preloadHeroImage(activeEntry.images[paletteMode])
+  }, [activeEntry, paletteMode, preloadHeroImage])
+
+  useEffect(() => {
+    if (!activeEntry) {
+      return
+    }
 
     if (skipNextAutoSelect.current) {
       skipNextAutoSelect.current = false
@@ -356,40 +381,22 @@ function App() {
     const slug = buildPokemonSlug(activeEntry)
     const slugWithMode = paletteMode === 'shiny' ? `${slug}-shiny` : slug
     const exportWidth = 750
-    const exportWrapper = document.createElement('div')
-    const exportNode = node.cloneNode(true) as HTMLElement
-
-    exportWrapper.style.position = 'fixed'
-    exportWrapper.style.left = '-10000px'
-    exportWrapper.style.top = '0'
-    exportWrapper.style.width = `${exportWidth}px`
-    exportWrapper.style.pointerEvents = 'none'
-    exportWrapper.style.opacity = '0'
-    exportWrapper.style.margin = '0'
-    exportWrapper.style.padding = '0'
-    exportWrapper.style.zIndex = '-1'
-
-    exportNode.style.width = `${exportWidth}px`
-    exportNode.style.maxWidth = 'none'
-    exportNode.style.margin = '0'
-    exportNode.style.height = 'auto'
-
-    exportWrapper.appendChild(exportNode)
-    document.body.appendChild(exportWrapper)
 
     setIsExporting(true)
     try {
-      const exportHeight = Math.max(
-        exportNode.scrollHeight,
-        exportNode.offsetHeight,
-        node.scrollHeight,
-        node.offsetHeight,
-      )
-      const dataUrl = await toPng(exportNode, {
-        cacheBust: true,
-        pixelRatio: 2,
+      await preloadHeroImage(activeEntry.images[paletteMode])
+      const exportHeight = Math.max(node.scrollHeight, node.offsetHeight)
+      const blob = await toBlob(node, {
+        cacheBust: false,
+        pixelRatio: 1.25,
         width: exportWidth,
         height: exportHeight,
+        style: {
+          width: `${exportWidth}px`,
+          maxWidth: 'none',
+          margin: '0',
+          padding: '0',
+        },
         filter: (element) => {
           if (!(element instanceof HTMLElement)) {
             return true
@@ -397,19 +404,23 @@ function App() {
           return !element.classList.contains('hero-actions')
         },
       })
+      if (!blob) {
+        throw new Error('No export blob.')
+      }
 
+      const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
-      link.href = dataUrl
+      link.href = url
       link.download = `${slugWithMode}.png`
       link.click()
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000)
       setToast('Downloaded hero panel.')
     } catch (error) {
       setToast('Unable to export image.')
     } finally {
-      document.body.removeChild(exportWrapper)
       setIsExporting(false)
     }
-  }, [activeEntry, isExporting, paletteMode])
+  }, [activeEntry, isExporting, paletteMode, preloadHeroImage])
 
   const handleSurprise = useCallback(() => {
     if (filteredEntries.length === 0) {
