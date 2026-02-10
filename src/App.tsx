@@ -20,7 +20,7 @@ import { usePokemonIndex } from './hooks/usePokemonIndex'
 import { useDebouncedValue } from './hooks/useDebouncedValue'
 import { toBlob } from 'html-to-image'
 
-import { copyToClipboard, getContrastColor, toRgba, toggleValue } from './lib/ui'
+import { copyToClipboard, getContrastColor, getExportSizing, toRgba, toggleValue } from './lib/ui'
 
 const buildToast = (label: string) => `Copied ${label} to clipboard`
 
@@ -380,22 +380,31 @@ function App() {
 
     const slug = buildPokemonSlug(activeEntry)
     const slugWithMode = paletteMode === 'shiny' ? `${slug}-shiny` : slug
-    const exportWidth = 750
+    const targetWidth = 750
 
     setIsExporting(true)
     try {
       await preloadHeroImage(activeEntry.images[paletteMode])
-      const exportHeight = Math.max(node.scrollHeight, node.offsetHeight)
+      const nodeWidth = Math.max(node.scrollWidth, node.offsetWidth)
+      const nodeHeight = Math.max(node.scrollHeight, node.offsetHeight)
+      const { scale, width: exportWidth, height: exportHeight } = getExportSizing(
+        nodeWidth,
+        nodeHeight,
+        targetWidth,
+      )
       const blob = await toBlob(node, {
         cacheBust: false,
         pixelRatio: 1.25,
         width: exportWidth,
         height: exportHeight,
         style: {
-          width: `${exportWidth}px`,
+          width: `${nodeWidth}px`,
+          height: `${nodeHeight}px`,
           maxWidth: 'none',
           margin: '0',
           padding: '0',
+          transform: scale === 1 ? 'none' : `scale(${scale})`,
+          transformOrigin: 'top left',
         },
         filter: (element) => {
           if (!(element instanceof HTMLElement)) {

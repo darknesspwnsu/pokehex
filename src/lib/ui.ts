@@ -68,3 +68,15 @@ export const copyToClipboard = async (text: string) => {
     return false
   }
 }
+
+export const getExportSizing = (width: number, height: number, targetWidth: number) => {
+  const safeWidth = Math.max(1, width)
+  const safeHeight = Math.max(1, height)
+  const scale = safeWidth > targetWidth ? targetWidth / safeWidth : 1
+
+  return {
+    scale,
+    width: Math.round(safeWidth * scale),
+    height: Math.round(safeHeight * scale),
+  }
+}
