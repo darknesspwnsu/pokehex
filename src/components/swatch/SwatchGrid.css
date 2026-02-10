@@ -6,8 +6,21 @@
   height: 100px;
 }
 
+.swatch-card-disabled {
+  height: 100px;
+  border-radius: 6px;
+  border: 1px solid var(--page-stroke);
+  background: var(--page-surface-strong);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
 @media (max-width: 768px) {
   .swatch-button {
+    height: 72px;
+  }
+
+  .swatch-card-disabled {
     height: 72px;
   }
 }

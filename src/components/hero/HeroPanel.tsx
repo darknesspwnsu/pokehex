@@ -6,6 +6,7 @@ import { TYPE_COLORS } from '../../lib/constants'
 import { formatDex, getContrastColor, toRgba } from '../../lib/ui'
 import type { PaletteMode, PokemonEntry } from '../../lib/types'
 import { ShinySparkle } from '../shared/ShinySparkle'
+import missingNo from '../../assets/missingno.webp'
 
 type HeroPanelProps = {
   entry: PokemonEntry
@@ -103,7 +104,8 @@ export const HeroPanel = ({
     { label: 'SP.DEF', value: entry.baseStats?.specialDefense ?? 0 },
     { label: 'SPD', value: entry.baseStats?.speed ?? 0 },
   ]
-  const artUrl = entry.images[paletteMode]
+  const hasArt = Boolean(entry.images[paletteMode])
+  const artUrl = hasArt ? entry.images[paletteMode] : missingNo
   const cachedTransform = useMemo(
     () => (artUrl ? heroArtCache.get(artUrl) ?? null : null),
     [artUrl],
@@ -130,9 +132,11 @@ export const HeroPanel = ({
     >
       <div className="hero-content flex items-center justify-between gap-6 layout-hero">
         <div className="hero-info hero-copy flex-1 space-y-4">
-          <p className="hero-kicker text-xs uppercase tracking-[0.35em]" style={{ color: dominantMuted }}>
-            Dominant color
-          </p>
+          {hasArt ? (
+            <p className="hero-kicker text-xs uppercase tracking-[0.35em]" style={{ color: dominantMuted }}>
+              Dominant color
+            </p>
+          ) : null}
           <h2 className="hero-title font-display text-4xl sm:text-5xl">
             <span className="hero-title-text inline-flex items-center gap-2">
               {entry.displayName}
@@ -156,18 +160,20 @@ export const HeroPanel = ({
               </span>
             ))}
           </div>
-          <div
-            className="hero-chip mt-4 inline-flex items-center gap-3 rounded-none px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em]"
-            style={{
-              backgroundColor: toRgba(dominantText, 0.18),
-              borderColor: toRgba(dominantText, 0.25),
-            }}
-          >
-            <span className="hero-chip-hex">{dominantHex}</span>
-            <span className="hero-chip-label" style={{ color: dominantMuted }}>
-              dominant
-            </span>
-          </div>
+          {hasArt ? (
+            <div
+              className="hero-chip mt-4 inline-flex items-center gap-3 rounded-none px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em]"
+              style={{
+                backgroundColor: toRgba(dominantText, 0.18),
+                borderColor: toRgba(dominantText, 0.25),
+              }}
+            >
+              <span className="hero-chip-hex">{dominantHex}</span>
+              <span className="hero-chip-label" style={{ color: dominantMuted }}>
+                dominant
+              </span>
+            </div>
+          ) : null}
           <div className="hero-stats grid grid-cols-3 gap-3">
             {stats.map((stat) => {
               const fill = Math.min(100, Math.round((stat.value / 255) * 100))
@@ -196,47 +202,43 @@ export const HeroPanel = ({
             })}
           </div>
         </div>
-        <div className="hero-art flex flex-1 items-center justify-center">
-          {artUrl ? (
-            <img
-              key={artUrl}
-              src={artUrl}
-              alt={entry.displayName}
-              className="hero-art-image drop-shadow-[0_30px_45px_rgba(0,0,0,0.25)]"
-              loading="lazy"
-              decoding="async"
-              crossOrigin="anonymous"
-              onLoad={(event) => {
-                if (!artUrl || heroArtCache.has(artUrl)) {
-                  return
-                }
-
-                try {
-                  const computed = computeArtTransform(event.currentTarget)
-                  if (computed) {
-                    heroArtCache.set(artUrl, computed)
-                    setArtTransform(computed)
-                  }
-                } catch {
-                  // Ignore CORS-tainted images.
-                }
-              }}
-              style={
-                artTransform
-                  ? {
-                      transform: `translate(${artTransform.offsetX}%, ${artTransform.offsetY}%) scale(${artTransform.scale})`,
-                    }
-                  : undefined
+        <div className="hero-art flex flex-1 flex-col items-center justify-center">
+          <img
+            key={artUrl}
+            src={artUrl}
+            alt={hasArt ? entry.displayName : `${entry.displayName} (missing art)`}
+            className="hero-art-image drop-shadow-[0_30px_45px_rgba(0,0,0,0.25)]"
+            loading="lazy"
+            decoding="async"
+            crossOrigin="anonymous"
+            onLoad={(event) => {
+              if (!artUrl || heroArtCache.has(artUrl)) {
+                return
               }
-            />
-          ) : (
-            <div
-              className="hero-art-placeholder flex h-64 w-64 items-center justify-center text-xs"
-              style={{ color: dominantMuted }}
-            >
-              No official art
-            </div>
-          )}
+
+              try {
+                const computed = computeArtTransform(event.currentTarget)
+                if (computed) {
+                  heroArtCache.set(artUrl, computed)
+                  setArtTransform(computed)
+                }
+              } catch {
+                // Ignore CORS-tainted images.
+              }
+            }}
+            style={
+              artTransform
+                ? {
+                    transform: `translate(${artTransform.offsetX}%, ${artTransform.offsetY}%) scale(${artTransform.scale})`,
+                  }
+                : undefined
+            }
+          />
+          {!hasArt ? (
+            <p className="hero-art-caption text-xs uppercase tracking-[0.2em]" style={{ color: dominantMuted }}>
+              (no official artwork)
+            </p>
+          ) : null}
         </div>
       </div>
     </motion.div>

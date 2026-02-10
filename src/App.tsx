@@ -367,6 +367,7 @@ function App() {
                     entryName={activeEntry.name}
                     swatches={activeSwatches}
                     totalPopulation={totalPopulation}
+                    isArtAvailable={Boolean(activeEntry.images[paletteMode])}
                     onCopyHex={(hex) => handleCopy('hex', hex)}
                   />
                 ) : (

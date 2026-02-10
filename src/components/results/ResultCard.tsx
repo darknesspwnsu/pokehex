@@ -4,6 +4,7 @@ import { memo } from 'react'
 import type { PaletteMode, PokemonEntry } from '../../lib/types'
 import { formatDex, getContrastColor, toRgba } from '../../lib/ui'
 import { ShinySparkle } from '../shared/ShinySparkle'
+import missingNo from '../../assets/missingno.webp'
 
 type ResultCardProps = {
   entry: PokemonEntry
@@ -41,7 +42,8 @@ const ResultCardComponent = ({
       ? `0 0 0 2px ${toRgba(cardSwatchB, 0.6)}, 0 20px 40px ${toRgba(cardSwatchB, 0.35)}`
       : baseShadow,
   }
-  const imageUrl = entry.images[paletteMode]
+  const hasArt = Boolean(entry.images[paletteMode])
+  const imageUrl = entry.images[paletteMode] || missingNo
 
   return (
     <button
@@ -55,22 +57,13 @@ const ResultCardComponent = ({
         className="result-card-image flex-shrink-0 overflow-hidden rounded-sm"
         style={{ backgroundColor: toRgba(cardSwatchA, 0.2) }}
       >
-        {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt={entry.displayName}
-            className="result-card-image-asset h-full w-full object-contain"
-            loading="lazy"
-            decoding="async"
-          />
-        ) : (
-          <div
-            className="result-card-placeholder flex h-full w-full items-center justify-center text-[10px]"
-            style={{ color: cardMuted }}
-          >
-            No art
-          </div>
-        )}
+        <img
+          src={imageUrl}
+          alt={hasArt ? entry.displayName : `${entry.displayName} (missing art)`}
+          className="result-card-image-asset h-full w-full object-contain"
+          loading="lazy"
+          decoding="async"
+        />
       </div>
       <div className="result-card-body">
         <div className="result-card-copy">
