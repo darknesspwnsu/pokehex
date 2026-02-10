@@ -1,4 +1,4 @@
-import type { FormTag } from './types'
+import type { FormTag, PokemonEntry } from './types'
 
 const SPECIAL_NAME_MAP: Record<string, string> = {
   'farfetchd': "Farfetch'd",
@@ -51,6 +51,15 @@ const REGION_TOKENS = new Set([
   'hisuian',
   'paldea',
   'paldean',
+])
+
+const SLUG_PREFIX_TOKENS = new Set([
+  'mega',
+  'gmax',
+  'primal',
+  'origin',
+  'totem',
+  ...REGION_TOKENS,
 ])
 
 
@@ -139,4 +148,28 @@ export const deriveFormTags = (name: string, isDefault: boolean): FormTag[] => {
   }
 
   return Array.from(tags)
+}
+
+export const buildPokemonSlug = (entry: PokemonEntry) => {
+  const species = entry.speciesName.toLowerCase()
+  if (entry.name === entry.speciesName) {
+    return species
+  }
+
+  const prefix = `${species}-`
+  const suffix = entry.name.startsWith(prefix)
+    ? entry.name.slice(prefix.length)
+    : entry.name
+  const tokens = suffix.split('-').filter(Boolean)
+
+  if (tokens.length === 0) {
+    return entry.name
+  }
+
+  const [first, ...rest] = tokens
+  if (first && SLUG_PREFIX_TOKENS.has(first)) {
+    return rest.length ? `${first}-${species}-${rest.join('-')}` : `${first}-${species}`
+  }
+
+  return entry.name
 }

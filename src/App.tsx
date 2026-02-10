@@ -10,6 +10,8 @@ import { ResultsPanel } from './components/results/ResultsPanel'
 import { Toast } from './components/toast/Toast'
 import { filterByCriteria, filterByQuery, sortByColorDistance } from './lib/filters'
 import { normalizeHex } from './lib/color'
+import { buildPokemonSlug } from './lib/pokemon'
+import type { PokemonEntry } from './lib/types'
 import { useLocalStorage } from './hooks/useLocalStorage'
 import { useFilterState } from './hooks/useFilterState'
 import { useHistoryList } from './hooks/useHistoryList'
@@ -59,14 +61,64 @@ function App() {
   const [hasSeededSelection, setHasSeededSelection] = useState(false)
   const hasRandomizedSelection = useRef(false)
   const skipNextAutoSelect = useRef(false)
+  const urlSync = useRef({ initialized: false, skipNext: false })
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')
   }, [theme])
 
+  const getCurrentSlug = useCallback(() => {
+    if (typeof window === 'undefined') {
+      return null
+    }
+    const base = import.meta.env.BASE_URL ?? '/'
+    const normalizedBase = base.endsWith('/') ? base : `${base}/`
+    let path = window.location.pathname
+    if (normalizedBase !== '/' && path.startsWith(normalizedBase)) {
+      path = path.slice(normalizedBase.length)
+    }
+    const slug = path.replace(/^\/+|\/+$/g, '')
+    return slug || null
+  }, [])
+
+  const parseSlug = useCallback((raw: string | null) => {
+    if (!raw) {
+      return null
+    }
+    const normalized = raw.toLowerCase()
+    if (normalized.endsWith('-shiny')) {
+      return { slug: normalized.slice(0, -6), paletteMode: 'shiny' as const }
+    }
+    return { slug: normalized, paletteMode: 'normal' as const }
+  }, [])
+
+  const entrySlugMap = useMemo(() => {
+    const map = new Map<string, PokemonEntry>()
+    entries.forEach((entry) => {
+      map.set(buildPokemonSlug(entry), entry)
+      map.set(entry.name, entry)
+    })
+    return map
+  }, [entries])
+
   useEffect(() => {
     if (hasRandomizedSelection.current || entries.length === 0) {
       return
+    }
+
+    const parsed = parseSlug(getCurrentSlug())
+    if (parsed?.slug) {
+      const match = entrySlugMap.get(parsed.slug)
+      if (match) {
+        skipNextAutoSelect.current = true
+        hasRandomizedSelection.current = true
+        urlSync.current.initialized = true
+        urlSync.current.skipNext = true
+        setSelectedName(match.name)
+        setHasSeededSelection(true)
+        setPaletteMode(parsed.paletteMode)
+        return
+      }
     }
 
     const random = entries[Math.floor(Math.random() * entries.length)]
@@ -77,7 +129,7 @@ function App() {
       setHasSeededSelection(true)
       setPaletteMode(Math.random() < 0.2 ? 'shiny' : 'normal')
     }
-  }, [entries, setPaletteMode])
+  }, [entries, entrySlugMap, getCurrentSlug, parseSlug, setPaletteMode])
 
   useEffect(() => {
     if (!isMobileNavOpen) {
@@ -114,6 +166,25 @@ function App() {
     window.addEventListener('keydown', handleKeydown)
     return () => window.removeEventListener('keydown', handleKeydown)
   }, [isMobileNavOpen])
+
+  useEffect(() => {
+    const handlePopState = () => {
+      const parsed = parseSlug(getCurrentSlug())
+      if (!parsed?.slug) {
+        return
+      }
+      const match = entrySlugMap.get(parsed.slug)
+      if (match) {
+        urlSync.current.skipNext = true
+        setSelectedName(match.name)
+        setPaletteMode(parsed.paletteMode)
+        setHasSeededSelection(true)
+      }
+    }
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [entrySlugMap, getCurrentSlug, parseSlug, setPaletteMode])
 
   const debouncedQuery = useDebouncedValue(query, 250)
   const debouncedColorQuery = useDebouncedValue(colorQuery, 250)
@@ -258,6 +329,28 @@ function App() {
   }, [filteredEntries.length])
 
   const isReady = !loading && !error && Boolean(activeEntry)
+
+  useEffect(() => {
+    if (!activeEntry || !hasSeededSelection) {
+      return
+    }
+    const slug = buildPokemonSlug(activeEntry)
+    const slugWithMode = paletteMode === 'shiny' ? `${slug}-shiny` : slug
+    const current = getCurrentSlug()
+    if (current === slugWithMode) {
+      return
+    }
+    if (urlSync.current.skipNext) {
+      urlSync.current.skipNext = false
+      return
+    }
+
+    const base = import.meta.env.BASE_URL ?? '/'
+    const normalizedBase = base.endsWith('/') ? base : `${base}/`
+    const nextPath = `${normalizedBase}${slugWithMode}`.replace(/\/{2,}/g, '/')
+    window.history.pushState({ slug: slugWithMode }, '', nextPath)
+    urlSync.current.initialized = true
+  }, [activeEntry, getCurrentSlug, hasSeededSelection, paletteMode])
 
   return (
     <div
