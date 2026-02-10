@@ -589,7 +589,7 @@ function App() {
 
       <footer className="site-footer w-full text-[10px] uppercase tracking-[0.2em] text-[var(--page-ink-muted)]">
         <span>
-          © 2026 Poke Hexcolor by Darkness AKA Shiva. All Pokemon artwork and
+          © {new Date().getFullYear()} Poke Hexcolor by Darkness AKA Shiva. All Pokemon artwork and
           trademarks belong to their respective owners.
         </span>
         <ThemeToggle
