@@ -163,9 +163,9 @@ export const HeroPanel = ({
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <path d="M7 12a5 5 0 0 1 5-5h2" />
-            <path d="M17 12a5 5 0 0 1-5 5h-2" />
-            <path d="M14 7l3-3 3 3" />
+            <path d="M12 3v12" />
+            <path d="m8 7 4-4 4 4" />
+            <path d="M5 11v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" />
           </svg>
         </button>
         {onExport ? (
