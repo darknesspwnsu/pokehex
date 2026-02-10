@@ -137,7 +137,6 @@ export const HeroPanel = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
       className="hero-panel hero-shell rounded-none shadow-float"
-      data-hero-export
       style={{
         backgroundColor: dominantHex,
         color: dominantText,

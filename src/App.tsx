@@ -528,34 +528,35 @@ function App() {
             ) : (
               <div className="app-hero-stack space-y-6">
                 {isReady && activeEntry ? (
-                  <HeroPanel
-                    entry={activeEntry}
-                    paletteMode={paletteMode}
-                    dominantHex={dominantHex}
-                    dominantText={dominantText}
-                    dominantMuted={dominantMuted}
-                    shareUrl={shareUrl}
-                    onShare={handleShare}
-                    onExport={handleExportHero}
-                    isExporting={isExporting}
-                  />
-                ) : (
-                  <div className="hero-panel hero-skeleton skeleton-block" />
-                )}
-                {isReady && activeEntry ? (
-                  <SwatchGrid
-                    entryName={activeEntry.name}
-                    swatches={activeSwatches}
-                    totalPopulation={totalPopulation}
-                    isArtAvailable={Boolean(activeEntry.images[paletteMode])}
-                    onCopyHex={(hex) => handleCopy('hex', hex)}
-                  />
-                ) : (
-                  <div className="swatch-grid swatch-skeleton layout-swatch grid grid-cols-3 gap-0">
-                    {Array.from({ length: 3 }).map((_, index) => (
-                      <div key={`swatch-skeleton-${index}`} className="swatch-skeleton-item skeleton-block" />
-                    ))}
+                  <div className="hero-export-block" data-hero-export>
+                    <HeroPanel
+                      entry={activeEntry}
+                      paletteMode={paletteMode}
+                      dominantHex={dominantHex}
+                      dominantText={dominantText}
+                      dominantMuted={dominantMuted}
+                      shareUrl={shareUrl}
+                      onShare={handleShare}
+                      onExport={handleExportHero}
+                      isExporting={isExporting}
+                    />
+                    <SwatchGrid
+                      entryName={activeEntry.name}
+                      swatches={activeSwatches}
+                      totalPopulation={totalPopulation}
+                      isArtAvailable={Boolean(activeEntry.images[paletteMode])}
+                      onCopyHex={(hex) => handleCopy('hex', hex)}
+                    />
                   </div>
+                ) : (
+                  <>
+                    <div className="hero-panel hero-skeleton skeleton-block" />
+                    <div className="swatch-grid swatch-skeleton layout-swatch grid grid-cols-3 gap-0">
+                      {Array.from({ length: 3 }).map((_, index) => (
+                        <div key={`swatch-skeleton-${index}`} className="swatch-skeleton-item skeleton-block" />
+                      ))}
+                    </div>
+                  </>
                 )}
                 {isReady && activeEntry ? (
                   <ExportPanel
