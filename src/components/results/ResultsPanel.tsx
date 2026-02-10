@@ -10,7 +10,6 @@ type ResultsPanelProps = {
   totalCount: number
   activeEntryName: string | null
   paletteMode: PaletteMode
-  dominantHex: string
   canLoadMore: boolean
   onSelect: (name: string) => void
   onLoadMore: () => void
@@ -21,7 +20,6 @@ export const ResultsPanel = ({
   totalCount,
   activeEntryName,
   paletteMode,
-  dominantHex,
   canLoadMore,
   onSelect,
   onLoadMore,
@@ -37,7 +35,6 @@ export const ResultsPanel = ({
               key={entry.name}
               entry={entry}
               paletteMode={paletteMode}
-              dominantHex={dominantHex}
               isActive={entry.name === activeEntryName}
               onSelect={onSelect}
             />

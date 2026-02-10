@@ -8,7 +8,6 @@ import { ShinySparkle } from '../shared/ShinySparkle'
 type ResultCardProps = {
   entry: PokemonEntry
   paletteMode: PaletteMode
-  dominantHex: string
   isActive: boolean
   onSelect: (name: string) => void
 }
@@ -16,12 +15,11 @@ type ResultCardProps = {
 const ResultCardComponent = ({
   entry,
   paletteMode,
-  dominantHex,
   isActive,
   onSelect,
 }: ResultCardProps) => {
   const swatches = entry.palettes[paletteMode].swatches.slice(0, 3)
-  const cardSwatchA = swatches[0]?.hex ?? dominantHex
+  const cardSwatchA = swatches[0]?.hex ?? '#94A3B8'
   const cardSwatchB = swatches[1]?.hex ?? cardSwatchA
   const cardSwatchC = swatches[2]?.hex ?? cardSwatchB
   const cardText = getContrastColor(cardSwatchA)

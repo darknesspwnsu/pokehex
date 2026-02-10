@@ -395,7 +395,6 @@ function App() {
                   totalCount={filteredEntries.length}
                   activeEntryName={activeEntry?.name ?? null}
                   paletteMode={paletteMode}
-                  dominantHex={dominantHex}
                   canLoadMore={visibleEntries.length < filteredEntries.length}
                   onSelect={handleSelectName}
                   onLoadMore={handleLoadMore}
