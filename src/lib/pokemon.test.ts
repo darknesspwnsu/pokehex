@@ -1,9 +1,11 @@
 import {
+  buildPokemonSlug,
   deriveFormTags,
   formatFormLabel,
   formatPokemonDisplayName,
   formatPokemonName,
 } from './pokemon'
+import { makeEntry } from '../test/factories'
 
 describe('pokemon formatting', () => {
   it('formats special case names', () => {
@@ -37,5 +39,17 @@ describe('form tagging', () => {
 
   it('labels generic variants', () => {
     expect(deriveFormTags('pikachu-cosplay', false)).toContain('variant')
+  })
+})
+
+describe('slug builder', () => {
+  it('moves prefix form tokens before the species', () => {
+    const entry = makeEntry({ name: 'absol-mega-z', speciesName: 'absol' })
+    expect(buildPokemonSlug(entry)).toBe('mega-absol-z')
+  })
+
+  it('keeps suffix-based forms in place', () => {
+    const entry = makeEntry({ name: 'lycanroc-midnight', speciesName: 'lycanroc' })
+    expect(buildPokemonSlug(entry)).toBe('lycanroc-midnight')
   })
 })
