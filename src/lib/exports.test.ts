@@ -36,6 +36,15 @@ const entry: PokemonEntry = {
       ],
     },
   },
+  baseStats: {
+    hp: 35,
+    attack: 55,
+    defense: 40,
+    specialAttack: 50,
+    specialDefense: 50,
+    speed: 90,
+    total: 320,
+  },
 }
 
 describe('export helpers', () => {

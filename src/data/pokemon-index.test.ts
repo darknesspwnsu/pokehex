@@ -17,5 +17,6 @@ describe('pokemon index dataset', () => {
     )
 
     expect(sample).toBeTruthy()
+    expect(sample?.baseStats?.total).toBeGreaterThan(0)
   })
 })

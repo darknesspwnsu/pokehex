@@ -7,7 +7,7 @@ import sharp from 'sharp'
 
 import { extractDominantSwatches } from '../src/lib/palette'
 import { deriveFormTags, formatPokemonDisplayName } from '../src/lib/pokemon'
-import type { PaletteSet, PokemonEntry, RGB } from '../src/lib/types'
+import type { BaseStats, PaletteSet, PokemonEntry, RGB } from '../src/lib/types'
 
 const API_ROOT = 'https://pokeapi.co/api/v2'
 const SPRITE_BASE =
@@ -59,6 +59,13 @@ type Sprites = {
       front_default: string | null
       front_shiny: string | null
     }
+  }
+}
+
+type StatEntry = {
+  base_stat: number
+  stat: {
+    name: string
   }
 }
 
@@ -234,16 +241,70 @@ const getSpeciesInfo = async (
   return info
 }
 
+const buildBaseStats = (stats: StatEntry[]): BaseStats => {
+  const base = {
+    hp: 0,
+    attack: 0,
+    defense: 0,
+    specialAttack: 0,
+    specialDefense: 0,
+    speed: 0,
+  }
+
+  for (const stat of stats) {
+    switch (stat.stat.name) {
+      case 'hp':
+        base.hp = stat.base_stat
+        break
+      case 'attack':
+        base.attack = stat.base_stat
+        break
+      case 'defense':
+        base.defense = stat.base_stat
+        break
+      case 'special-attack':
+        base.specialAttack = stat.base_stat
+        break
+      case 'special-defense':
+        base.specialDefense = stat.base_stat
+        break
+      case 'speed':
+        base.speed = stat.base_stat
+        break
+      default:
+        break
+    }
+  }
+
+  const total =
+    base.hp +
+    base.attack +
+    base.defense +
+    base.specialAttack +
+    base.specialDefense +
+    base.speed
+
+  return {
+    ...base,
+    total,
+  }
+}
+
 const buildEntry = async (
   entry: ListEntry,
   existing: Map<string, PokemonEntry>,
   speciesCache: Map<string, SpeciesInfo>,
 ): Promise<PokemonEntry | null> => {
   const cached = existing.get(entry.name)
-  if (
+  const hasCachedPalettes =
     cached &&
     cached.palettes?.normal?.swatches?.length >= SWATCH_COUNT &&
     cached.palettes?.shiny?.swatches?.length >= SWATCH_COUNT
+  const hasCachedStats = Boolean(cached?.baseStats)
+  if (
+    cached &&
+    hasCachedPalettes &&
+    hasCachedStats
   ) {
     return cached
   }
@@ -257,6 +318,7 @@ const buildEntry = async (
     species: { name: string; url: string }
     types: { slot: number; type: { name: string } }[]
     sprites: Sprites
+    stats: StatEntry[]
   }>(entry.url)
 
   const speciesInfo = await getSpeciesInfo(pokemon.species.url, speciesCache)
@@ -264,18 +326,29 @@ const buildEntry = async (
     pokemon.name,
     pokemon.species.name,
   )
+  const baseStats = buildBaseStats(pokemon.stats ?? [])
 
   const normalCandidates = buildNormalCandidates(pokemon.sprites, pokemon.id)
   const shinyCandidates = buildShinyCandidates(pokemon.sprites, pokemon.id)
 
   const fallbackPalette = createFallbackPalette()
-  const normalResult = await resolvePaletteFromCandidates(
-    normalCandidates,
-    'normal',
-  ).catch(() => ({ palette: fallbackPalette, url: '' }))
+  const normalResult = hasCachedPalettes
+    ? {
+        palette: cached!.palettes.normal,
+        url: cached!.images.normal,
+      }
+    : await resolvePaletteFromCandidates(normalCandidates, 'normal').catch(() => ({
+        palette: fallbackPalette,
+        url: '',
+      }))
 
   let shinyResult = normalResult
-  if (shinyCandidates.length > 0) {
+  if (hasCachedPalettes && cached?.palettes?.shiny && cached?.images?.shiny) {
+    shinyResult = {
+      palette: cached.palettes.shiny,
+      url: cached.images.shiny,
+    }
+  } else if (shinyCandidates.length > 0) {
     try {
       shinyResult = await resolvePaletteFromCandidates(shinyCandidates, 'shiny')
     } catch (error) {
@@ -306,6 +379,7 @@ const buildEntry = async (
       normal: normalResult.palette,
       shiny: shinyResult.palette,
     },
+    baseStats,
   }
 }
 

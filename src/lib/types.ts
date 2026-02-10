@@ -13,6 +13,16 @@ export type PaletteSet = {
   sourceUrl: string
 }
 
+export type BaseStats = {
+  hp: number
+  attack: number
+  defense: number
+  specialAttack: number
+  specialDefense: number
+  speed: number
+  total: number
+}
+
 export type FormTag =
   | 'default'
   | 'mega'
@@ -45,6 +55,7 @@ export type PokemonEntry = {
     normal: PaletteSet
     shiny: PaletteSet
   }
+  baseStats: BaseStats
 }
 
 export type PokemonIndex = {

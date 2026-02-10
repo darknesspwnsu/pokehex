@@ -95,6 +95,14 @@ export const HeroPanel = ({
   dominantText,
   dominantMuted,
 }: HeroPanelProps) => {
+  const stats = [
+    { label: 'HP', value: entry.baseStats?.hp ?? 0 },
+    { label: 'ATK', value: entry.baseStats?.attack ?? 0 },
+    { label: 'DEF', value: entry.baseStats?.defense ?? 0 },
+    { label: 'SP.ATK', value: entry.baseStats?.specialAttack ?? 0 },
+    { label: 'SP.DEF', value: entry.baseStats?.specialDefense ?? 0 },
+    { label: 'SPD', value: entry.baseStats?.speed ?? 0 },
+  ]
   const artUrl = entry.images[paletteMode]
   const cachedTransform = useMemo(
     () => (artUrl ? heroArtCache.get(artUrl) ?? null : null),
@@ -159,6 +167,33 @@ export const HeroPanel = ({
             <span className="hero-chip-label" style={{ color: dominantMuted }}>
               dominant
             </span>
+          </div>
+          <div className="hero-stats grid grid-cols-3 gap-3">
+            {stats.map((stat) => {
+              const fill = Math.min(100, Math.round((stat.value / 255) * 100))
+              return (
+                <div key={`${entry.name}-${stat.label}`} className="hero-stat">
+                  <div className="hero-stat-row">
+                    <span className="hero-stat-label" style={{ color: dominantMuted }}>
+                      {stat.label}
+                    </span>
+                    <span className="hero-stat-value">{stat.value}</span>
+                  </div>
+                  <div
+                    className="hero-stat-bar"
+                    style={{ backgroundColor: toRgba(dominantText, 0.2) }}
+                  >
+                    <span
+                      className="hero-stat-fill"
+                      style={{
+                        width: `${fill}%`,
+                        backgroundColor: toRgba(dominantText, 0.7),
+                      }}
+                    />
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </div>
         <div className="hero-art flex flex-1 items-center justify-center">
