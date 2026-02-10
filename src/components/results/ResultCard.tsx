@@ -42,6 +42,7 @@ const ResultCardComponent = ({
       ? `0 0 0 2px ${toRgba(cardSwatchB, 0.6)}, 0 20px 40px ${toRgba(cardSwatchB, 0.35)}`
       : baseShadow,
   }
+  const imageUrl = entry.images[paletteMode]
 
   return (
     <button
@@ -55,12 +56,13 @@ const ResultCardComponent = ({
         className="result-card-image flex-shrink-0 overflow-hidden rounded-sm"
         style={{ backgroundColor: toRgba(cardSwatchA, 0.2) }}
       >
-        {entry.images[paletteMode] ? (
+        {imageUrl ? (
           <img
-            src={entry.images[paletteMode]}
+            src={imageUrl}
             alt={entry.displayName}
             className="result-card-image-asset h-full w-full object-contain"
             loading="lazy"
+            decoding="async"
           />
         ) : (
           <div

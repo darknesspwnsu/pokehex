@@ -1,4 +1,5 @@
 import './HeroPanel.css'
+import { useEffect, useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 
 import { TYPE_COLORS } from '../../lib/constants'
@@ -13,6 +14,79 @@ type HeroPanelProps = {
   dominantMuted: string
 }
 
+type ArtTransform = {
+  scale: number
+  offsetX: number
+  offsetY: number
+}
+
+const heroArtCache = new Map<string, ArtTransform>()
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, value))
+
+const computeArtTransform = (img: HTMLImageElement): ArtTransform | null => {
+  const width = img.naturalWidth
+  const height = img.naturalHeight
+
+  if (!width || !height) {
+    return null
+  }
+
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
+  const ctx = canvas.getContext('2d', { willReadFrequently: true })
+  if (!ctx) {
+    return null
+  }
+
+  ctx.clearRect(0, 0, width, height)
+  ctx.drawImage(img, 0, 0, width, height)
+
+  let minX = width
+  let minY = height
+  let maxX = 0
+  let maxY = 0
+
+  const alphaThreshold = 12
+  const stride = Math.max(1, Math.floor(Math.min(width, height) / 300))
+  const imageData = ctx.getImageData(0, 0, width, height)
+  const { data } = imageData
+
+  for (let y = 0; y < height; y += stride) {
+    for (let x = 0; x < width; x += stride) {
+      const alpha = data[(y * width + x) * 4 + 3]
+      if (alpha > alphaThreshold) {
+        if (x < minX) minX = x
+        if (x > maxX) maxX = x
+        if (y < minY) minY = y
+        if (y > maxY) maxY = y
+      }
+    }
+  }
+
+  if (maxX <= minX || maxY <= minY) {
+    return null
+  }
+
+  const bboxWidth = maxX - minX
+  const bboxHeight = maxY - minY
+  const bboxRatio = Math.max(bboxWidth / width, bboxHeight / height)
+  const targetFill = 0.9
+  const scale = clamp(targetFill / bboxRatio, 1, 1.25)
+  const centerX = (minX + maxX) / 2
+  const centerY = (minY + maxY) / 2
+  const offsetX = ((width / 2 - centerX) / width) * 100
+  const offsetY = ((height / 2 - centerY) / height) * 100
+
+  return {
+    scale: Number(scale.toFixed(3)),
+    offsetX: Number(offsetX.toFixed(2)),
+    offsetY: Number(offsetY.toFixed(2)),
+  }
+}
+
 export const HeroPanel = ({
   entry,
   paletteMode,
@@ -20,6 +94,17 @@ export const HeroPanel = ({
   dominantText,
   dominantMuted,
 }: HeroPanelProps) => {
+  const artUrl = entry.images[paletteMode]
+  const cachedTransform = useMemo(
+    () => (artUrl ? heroArtCache.get(artUrl) ?? null : null),
+    [artUrl],
+  )
+  const [artTransform, setArtTransform] = useState<ArtTransform | null>(cachedTransform)
+
+  useEffect(() => {
+    setArtTransform(cachedTransform)
+  }, [cachedTransform])
+
   return (
     <motion.div
       key={entry.name}
@@ -71,12 +156,37 @@ export const HeroPanel = ({
           </div>
         </div>
         <div className="hero-art flex flex-1 items-center justify-center">
-          {entry.images[paletteMode] ? (
+          {artUrl ? (
             <img
-              src={entry.images[paletteMode]}
+              key={artUrl}
+              src={artUrl}
               alt={entry.displayName}
-              className="hero-art-image w-auto object-contain drop-shadow-[0_30px_45px_rgba(0,0,0,0.25)]"
+              className="hero-art-image drop-shadow-[0_30px_45px_rgba(0,0,0,0.25)]"
               loading="lazy"
+              decoding="async"
+              crossOrigin="anonymous"
+              onLoad={(event) => {
+                if (!artUrl || heroArtCache.has(artUrl)) {
+                  return
+                }
+
+                try {
+                  const computed = computeArtTransform(event.currentTarget)
+                  if (computed) {
+                    heroArtCache.set(artUrl, computed)
+                    setArtTransform(computed)
+                  }
+                } catch {
+                  // Ignore CORS-tainted images.
+                }
+              }}
+              style={
+                artTransform
+                  ? {
+                      transform: `translate(${artTransform.offsetX}%, ${artTransform.offsetY}%) scale(${artTransform.scale})`,
+                    }
+                  : undefined
+              }
             />
           ) : (
             <div
