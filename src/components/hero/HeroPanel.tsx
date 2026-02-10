@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { TYPE_COLORS } from '../../lib/constants'
 import { formatDex, getContrastColor, toRgba } from '../../lib/ui'
 import type { PaletteMode, PokemonEntry } from '../../lib/types'
+import { ShinySparkle } from '../shared/ShinySparkle'
 
 type HeroPanelProps = {
   entry: PokemonEntry
@@ -124,7 +125,12 @@ export const HeroPanel = ({
           <p className="hero-kicker text-xs uppercase tracking-[0.35em]" style={{ color: dominantMuted }}>
             Dominant color
           </p>
-          <h2 className="hero-title font-display text-4xl sm:text-5xl">{entry.displayName}</h2>
+          <h2 className="hero-title font-display text-4xl sm:text-5xl">
+            <span className="hero-title-text inline-flex items-center gap-2">
+              {entry.displayName}
+              {paletteMode === 'shiny' ? <ShinySparkle className="hero-title-sparkle" /> : null}
+            </span>
+          </h2>
           <p className="hero-meta text-sm sm:text-base" style={{ color: dominantMuted }}>
             #{formatDex(entry.speciesId)} · Gen {entry.generation} · {paletteMode}
           </p>

@@ -1,21 +1,26 @@
 import './SidePanel.css'
 import { TYPE_COLORS } from '../../lib/constants'
 import { formatDex, getContrastColor } from '../../lib/ui'
-import type { PokemonEntry } from '../../lib/types'
+import type { PaletteMode, PokemonEntry } from '../../lib/types'
 import { panelCardBase } from '../styles'
+import { ShinySparkle } from '../shared/ShinySparkle'
 
 type SidePanelSelectedProps = {
   activeEntry: PokemonEntry | null
+  paletteMode: PaletteMode
 }
 
-export const SidePanelSelected = ({ activeEntry }: SidePanelSelectedProps) => {
+export const SidePanelSelected = ({ activeEntry, paletteMode }: SidePanelSelectedProps) => {
   return (
     <div className={`${panelCardBase} side-panel-section side-panel-selected space-y-3`}>
       <p className="side-panel-label text-xs uppercase tracking-[0.35em] text-[var(--panel-ink-muted)]">
         Selected Pokemon
       </p>
       <h2 className="side-panel-title font-display text-3xl">
-        {activeEntry?.displayName ?? 'Loading...'}
+        <span className="side-panel-title-text inline-flex items-center gap-2">
+          {activeEntry?.displayName ?? 'Loading...'}
+          {paletteMode === 'shiny' ? <ShinySparkle className="side-panel-title-sparkle" /> : null}
+        </span>
       </h2>
       <div className="side-panel-meta text-xs uppercase tracking-[0.25em] text-[var(--panel-ink-muted)]">
         {activeEntry

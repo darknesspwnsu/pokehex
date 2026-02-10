@@ -3,6 +3,7 @@ import { memo } from 'react'
 
 import type { PaletteMode, PokemonEntry } from '../../lib/types'
 import { formatDex, getContrastColor, toRgba } from '../../lib/ui'
+import { ShinySparkle } from '../shared/ShinySparkle'
 
 type ResultCardProps = {
   entry: PokemonEntry
@@ -76,7 +77,12 @@ const ResultCardComponent = ({
       <div className="result-card-body">
         <div className="result-card-copy">
           <p className="result-card-name text-[13px] font-semibold leading-tight">
-            {entry.displayName}
+            <span className="result-card-name-text inline-flex items-center gap-1.5">
+              {entry.displayName}
+              {paletteMode === 'shiny' ? (
+                <ShinySparkle className="result-card-name-sparkle" />
+              ) : null}
+            </span>
           </p>
           <p
             className="result-card-dex text-[10px] uppercase tracking-[0.1em]"

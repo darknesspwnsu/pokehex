@@ -96,7 +96,7 @@ export const SidePanel = ({
             </button>
           </div>
         ) : null}
-        <SidePanelSelected activeEntry={activeEntry} />
+        <SidePanelSelected activeEntry={activeEntry} paletteMode={paletteMode} />
         <SidePanelSearch
           searchMode={searchMode}
           query={query}

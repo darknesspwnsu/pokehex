@@ -1,0 +1,10 @@
+.shiny-sparkle {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  background-color: currentColor;
+  mask: var(--sparkle-url) center / contain no-repeat;
+  -webkit-mask: var(--sparkle-url) center / contain no-repeat;
+  vertical-align: -0.1em;
+}

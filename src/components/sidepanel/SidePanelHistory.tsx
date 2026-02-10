@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react'
 
 import type { PaletteMode, PokemonEntry } from '../../lib/types'
 import { chipBase, panelCardBase } from '../styles'
+import { ShinySparkle } from '../shared/ShinySparkle'
 
 type SidePanelHistoryProps = {
   historyEntries: PokemonEntry[]
@@ -38,7 +39,7 @@ export const SidePanelHistory = ({
               onClick={() => onSelectName(entry.name)}
             >
               <span className="side-panel-history-swatches flex gap-[2px]">
-              {entry.palettes[paletteMode].swatches.slice(0, 3).map((swatch) => (
+                {entry.palettes[paletteMode].swatches.slice(0, 3).map((swatch) => (
                   <span
                     key={`${entry.name}-${swatch.hex}`}
                     className="side-panel-history-dot h-3 w-3 rounded-full"
@@ -46,7 +47,12 @@ export const SidePanelHistory = ({
                   />
                 ))}
               </span>
-              {entry.displayName}
+              <span className="side-panel-history-name inline-flex items-center gap-1.5">
+                {entry.displayName}
+                {paletteMode === 'shiny' ? (
+                  <ShinySparkle className="side-panel-history-sparkle" />
+                ) : null}
+              </span>
             </button>
           ))}
         </div>
