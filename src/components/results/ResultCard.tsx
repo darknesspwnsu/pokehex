@@ -90,9 +90,9 @@ const ResultCardComponent = ({
           </p>
         </div>
         <div className="result-card-swatches flex gap-1.5">
-          {swatches.map((swatch) => (
+          {swatches.map((swatch, index) => (
             <span
-              key={`${entry.name}-${swatch.hex}`}
+              key={`${entry.name}-${swatch.hex}-${index}`}
               className="result-card-swatch h-2 w-full rounded-full"
               style={{ backgroundColor: swatch.hex }}
             />

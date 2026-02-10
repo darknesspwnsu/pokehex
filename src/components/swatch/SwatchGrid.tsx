@@ -15,15 +15,16 @@ export const SwatchGrid = ({
   totalPopulation,
   onCopyHex,
 }: SwatchGridProps) => {
+  const visibleSwatches = swatches.slice(0, 3)
   return (
     <div className="swatch-grid swatch-grid-shell grid grid-cols-3 gap-0 layout-swatch">
-      {swatches.map((swatch) => {
+      {visibleSwatches.map((swatch, index) => {
         const percentage = totalPopulation
           ? Math.round((swatch.population / totalPopulation) * 100)
           : 0
         return (
           <SwatchCard
-            key={`${entryName}-${swatch.hex}`}
+            key={`${entryName}-${swatch.hex}-${index}`}
             entryName={entryName}
             swatch={swatch}
             percentage={percentage}
