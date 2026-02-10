@@ -14,6 +14,10 @@ type HeroPanelProps = {
   dominantHex: string
   dominantText: string
   dominantMuted: string
+  shareUrl?: string
+  onShare?: (url: string) => void
+  onExport?: () => void
+  isExporting?: boolean
 }
 
 type ArtTransform = {
@@ -95,6 +99,10 @@ export const HeroPanel = ({
   dominantHex,
   dominantText,
   dominantMuted,
+  shareUrl,
+  onShare,
+  onExport,
+  isExporting = false,
 }: HeroPanelProps) => {
   const stats = [
     { label: 'HP', value: entry.baseStats?.hp ?? 0 },
@@ -116,6 +124,12 @@ export const HeroPanel = ({
     setArtTransform(cachedTransform)
   }, [cachedTransform])
 
+  const handleShare = () => {
+    if (shareUrl && onShare) {
+      onShare(shareUrl)
+    }
+  }
+
   return (
     <motion.div
       key={entry.name}
@@ -123,6 +137,7 @@ export const HeroPanel = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
       className="hero-panel hero-shell rounded-none shadow-float"
+      data-hero-export
       style={{
         backgroundColor: dominantHex,
         color: dominantText,
@@ -130,6 +145,54 @@ export const HeroPanel = ({
           'radial-gradient(circle at 20% 20%, rgba(255,255,255,0.35), transparent 55%), radial-gradient(circle at 80% 20%, rgba(0,0,0,0.2), transparent 60%)',
       }}
     >
+      <div className="hero-actions">
+        <button
+          type="button"
+          className="hero-action-button"
+          onClick={handleShare}
+          aria-label="Copy share link"
+          disabled={!shareUrl}
+        >
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M7 12a5 5 0 0 1 5-5h2" />
+            <path d="M17 12a5 5 0 0 1-5 5h-2" />
+            <path d="M14 7l3-3 3 3" />
+          </svg>
+        </button>
+        {onExport ? (
+          <button
+            type="button"
+            className="hero-action-button"
+            onClick={onExport}
+            aria-label="Export hero panel"
+            disabled={isExporting}
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 3v12" />
+              <path d="m7 10 5 5 5-5" />
+              <path d="M4 21h16" />
+            </svg>
+          </button>
+        ) : null}
+      </div>
       <div className="hero-content flex items-center justify-between gap-6 layout-hero">
         <div className="hero-info hero-copy flex-1 space-y-4">
           {hasArt ? (

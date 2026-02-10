@@ -313,10 +313,32 @@ function App() {
 
   const { historyEntries } = useHistoryList(activeEntry, entryMap)
 
+  const shareUrl = useMemo(() => {
+    if (!activeEntry) {
+      return ''
+    }
+    const slug = buildPokemonSlug(activeEntry)
+    const slugWithMode = paletteMode === 'shiny' ? `${slug}-shiny` : slug
+    const base = import.meta.env.BASE_URL ?? '/'
+    const normalizedBase = base.endsWith('/') ? base : `${base}/`
+    const origin = typeof window !== 'undefined' ? window.location.origin : ''
+    return `${origin}${normalizedBase}#${slugWithMode}`
+  }, [activeEntry, paletteMode])
+
   const handleCopy = async (label: string, text: string) => {
     const success = await copyToClipboard(text)
     setToast(success ? buildToast(label) : 'Unable to copy to clipboard.')
   }
+
+  const handleShare = useCallback(
+    async (url: string) => {
+      if (!url) {
+        return
+      }
+      await handleCopy('share link', url)
+    },
+    [handleCopy],
+  )
 
   const handleSurprise = useCallback(() => {
     if (filteredEntries.length === 0) {
@@ -471,6 +493,8 @@ function App() {
                     dominantHex={dominantHex}
                     dominantText={dominantText}
                     dominantMuted={dominantMuted}
+                    shareUrl={shareUrl}
+                    onShare={handleShare}
                   />
                 ) : (
                   <div className="hero-panel hero-skeleton skeleton-block" />

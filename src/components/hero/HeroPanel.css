@@ -1,6 +1,7 @@
 .hero-panel {
   height: 40vh;
   padding: 16px;
+  position: relative;
 }
 
 .hero-content {
@@ -29,6 +30,39 @@
 
 .hero-art-caption {
   margin-top: 8px;
+}
+
+.hero-actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+}
+
+.hero-action-button {
+  height: 36px;
+  width: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid var(--page-stroke);
+  background: var(--page-surface-strong);
+  color: var(--page-ink);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hero-action-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.22);
+}
+
+.hero-action-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .hero-stat {
@@ -94,6 +128,11 @@
 
   .hero-art-caption {
     margin-top: 6px;
+  }
+
+  .hero-actions {
+    top: 10px;
+    right: 10px;
   }
 
   .hero-stat-row {
