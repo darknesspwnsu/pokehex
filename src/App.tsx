@@ -355,12 +355,41 @@ function App() {
 
     const slug = buildPokemonSlug(activeEntry)
     const slugWithMode = paletteMode === 'shiny' ? `${slug}-shiny` : slug
+    const exportWidth = 750
+    const exportWrapper = document.createElement('div')
+    const exportNode = node.cloneNode(true) as HTMLElement
+
+    exportWrapper.style.position = 'fixed'
+    exportWrapper.style.left = '-10000px'
+    exportWrapper.style.top = '0'
+    exportWrapper.style.width = `${exportWidth}px`
+    exportWrapper.style.pointerEvents = 'none'
+    exportWrapper.style.opacity = '0'
+    exportWrapper.style.margin = '0'
+    exportWrapper.style.padding = '0'
+    exportWrapper.style.zIndex = '-1'
+
+    exportNode.style.width = `${exportWidth}px`
+    exportNode.style.maxWidth = 'none'
+    exportNode.style.margin = '0'
+    exportNode.style.height = 'auto'
+
+    exportWrapper.appendChild(exportNode)
+    document.body.appendChild(exportWrapper)
 
     setIsExporting(true)
     try {
-      const dataUrl = await toPng(node, {
+      const exportHeight = Math.max(
+        exportNode.scrollHeight,
+        exportNode.offsetHeight,
+        node.scrollHeight,
+        node.offsetHeight,
+      )
+      const dataUrl = await toPng(exportNode, {
         cacheBust: true,
         pixelRatio: 2,
+        width: exportWidth,
+        height: exportHeight,
         filter: (element) => {
           if (!(element instanceof HTMLElement)) {
             return true
@@ -377,6 +406,7 @@ function App() {
     } catch (error) {
       setToast('Unable to export image.')
     } finally {
+      document.body.removeChild(exportWrapper)
       setIsExporting(false)
     }
   }, [activeEntry, isExporting, paletteMode])
