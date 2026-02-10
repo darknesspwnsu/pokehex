@@ -18,6 +18,8 @@ import { useHistoryList } from './hooks/useHistoryList'
 import { usePaletteTheme } from './hooks/usePaletteTheme'
 import { usePokemonIndex } from './hooks/usePokemonIndex'
 import { useDebouncedValue } from './hooks/useDebouncedValue'
+import { toPng } from 'html-to-image'
+
 import { copyToClipboard, getContrastColor, toRgba, toggleValue } from './lib/ui'
 
 const buildToast = (label: string) => `Copied ${label} to clipboard`
@@ -57,6 +59,7 @@ function App() {
   const [selectedName, setSelectedName] = useState<string | null>(null)
   const [resultsLimit, setResultsLimit] = useState(60)
   const [toast, setToast] = useState<string | null>(null)
+  const [isExporting, setIsExporting] = useState(false)
   const [isMobileNavOpen, setMobileNavOpen] = useState(false)
   const [hasSeededSelection, setHasSeededSelection] = useState(false)
   const hasRandomizedSelection = useRef(false)
@@ -340,6 +343,44 @@ function App() {
     [handleCopy],
   )
 
+  const handleExportHero = useCallback(async () => {
+    if (!activeEntry || isExporting) {
+      return
+    }
+
+    const node = document.querySelector('[data-hero-export]') as HTMLElement | null
+    if (!node) {
+      return
+    }
+
+    const slug = buildPokemonSlug(activeEntry)
+    const slugWithMode = paletteMode === 'shiny' ? `${slug}-shiny` : slug
+
+    setIsExporting(true)
+    try {
+      const dataUrl = await toPng(node, {
+        cacheBust: true,
+        pixelRatio: 2,
+        filter: (element) => {
+          if (!(element instanceof HTMLElement)) {
+            return true
+          }
+          return !element.classList.contains('hero-actions')
+        },
+      })
+
+      const link = document.createElement('a')
+      link.href = dataUrl
+      link.download = `${slugWithMode}.png`
+      link.click()
+      setToast('Downloaded hero panel.')
+    } catch (error) {
+      setToast('Unable to export image.')
+    } finally {
+      setIsExporting(false)
+    }
+  }, [activeEntry, isExporting, paletteMode])
+
   const handleSurprise = useCallback(() => {
     if (filteredEntries.length === 0) {
       return
@@ -495,6 +536,8 @@ function App() {
                     dominantMuted={dominantMuted}
                     shareUrl={shareUrl}
                     onShare={handleShare}
+                    onExport={handleExportHero}
+                    isExporting={isExporting}
                   />
                 ) : (
                   <div className="hero-panel hero-skeleton skeleton-block" />

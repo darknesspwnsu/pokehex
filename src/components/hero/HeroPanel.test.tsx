@@ -56,4 +56,22 @@ describe('HeroPanel', () => {
     await userEvent.click(screen.getByRole('button', { name: /copy share link/i }))
     expect(onShare).toHaveBeenCalledWith('https://example.com/#pikachu')
   })
+
+  it('fires export action', async () => {
+    const entry = makeEntry()
+    const onExport = vi.fn()
+    render(
+      <HeroPanel
+        entry={entry}
+        paletteMode="normal"
+        dominantHex="#123456"
+        dominantText="#ffffff"
+        dominantMuted="rgba(255,255,255,0.6)"
+        onExport={onExport}
+      />,
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: /export hero panel/i }))
+    expect(onExport).toHaveBeenCalled()
+  })
 })
