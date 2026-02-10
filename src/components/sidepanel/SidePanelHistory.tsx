@@ -3,7 +3,6 @@ import type { CSSProperties } from 'react'
 
 import type { PaletteMode, PokemonEntry } from '../../lib/types'
 import { chipBase, panelCardBase } from '../styles'
-import { ShinySparkle } from '../shared/ShinySparkle'
 
 type SidePanelHistoryProps = {
   historyEntries: PokemonEntry[]
@@ -49,9 +48,6 @@ export const SidePanelHistory = ({
               </span>
               <span className="side-panel-history-name inline-flex items-center gap-1.5">
                 {entry.displayName}
-                {paletteMode === 'shiny' ? (
-                  <ShinySparkle className="side-panel-history-sparkle" />
-                ) : null}
               </span>
             </button>
           ))}
