@@ -20,7 +20,14 @@ import { usePokemonIndex } from './hooks/usePokemonIndex'
 import { useDebouncedValue } from './hooks/useDebouncedValue'
 import { toBlob } from 'html-to-image'
 
-import { copyToClipboard, getContrastColor, getExportSizing, toRgba, toggleValue } from './lib/ui'
+import {
+  copyToClipboard,
+  fetchImageDataUrl,
+  getContrastColor,
+  getExportSizing,
+  toRgba,
+  toggleValue,
+} from './lib/ui'
 
 const buildToast = (label: string) => `Copied ${label} to clipboard`
 
@@ -66,6 +73,7 @@ function App() {
   const skipNextAutoSelect = useRef(false)
   const urlSync = useRef({ initialized: false, skipNext: false, ignoreHashChange: false })
   const decodedHeroImages = useRef(new Set<string>())
+  const exportImageCache = useRef(new Map<string, string>())
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')
@@ -77,6 +85,8 @@ function App() {
     }
     decodedHeroImages.current.add(url)
     const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.referrerPolicy = 'no-referrer'
     img.src = url
     if (img.decode) {
       try {
@@ -84,6 +94,31 @@ function App() {
       } catch (error) {
         // Ignore decode errors; export can still proceed.
       }
+    }
+  }, [])
+
+  const getExportImagePlaceholder = useCallback(async (url?: string) => {
+    if (!url) {
+      return ''
+    }
+    const cached = exportImageCache.current.get(url)
+    if (cached) {
+      return cached
+    }
+
+    try {
+      const dataUrl = await fetchImageDataUrl(url, {
+        mode: 'cors',
+        credentials: 'omit',
+        cache: 'force-cache',
+        referrerPolicy: 'no-referrer',
+      })
+      if (dataUrl) {
+        exportImageCache.current.set(url, dataUrl)
+      }
+      return dataUrl
+    } catch (error) {
+      return ''
     }
   }, [])
 
@@ -384,7 +419,11 @@ function App() {
 
     setIsExporting(true)
     try {
-      await preloadHeroImage(activeEntry.images[paletteMode])
+      const heroUrl = activeEntry.images[paletteMode]
+      const [_, imagePlaceholder] = await Promise.all([
+        preloadHeroImage(heroUrl),
+        getExportImagePlaceholder(heroUrl),
+      ])
       const nodeWidth = Math.max(node.scrollWidth, node.offsetWidth)
       const nodeHeight = Math.max(node.scrollHeight, node.offsetHeight)
       const { scale, width: exportWidth, height: exportHeight } = getExportSizing(
@@ -397,6 +436,13 @@ function App() {
         pixelRatio: 1.25,
         width: exportWidth,
         height: exportHeight,
+        imagePlaceholder,
+        fetchRequestInit: {
+          mode: 'cors',
+          credentials: 'omit',
+          cache: 'force-cache',
+          referrerPolicy: 'no-referrer',
+        },
         style: {
           width: `${nodeWidth}px`,
           height: `${nodeHeight}px`,
@@ -429,7 +475,13 @@ function App() {
     } finally {
       setIsExporting(false)
     }
-  }, [activeEntry, isExporting, paletteMode, preloadHeroImage])
+  }, [
+    activeEntry,
+    getExportImagePlaceholder,
+    isExporting,
+    paletteMode,
+    preloadHeroImage,
+  ])
 
   const handleSurprise = useCallback(() => {
     if (filteredEntries.length === 0) {

@@ -80,3 +80,21 @@ export const getExportSizing = (width: number, height: number, targetWidth: numb
     height: Math.round(safeHeight * scale),
   }
 }
+
+export const fetchImageDataUrl = async (url: string, init?: RequestInit) => {
+  try {
+    const response = await fetch(url, init)
+    if (!response.ok) {
+      return ''
+    }
+    const blob = await response.blob()
+    return await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onerror = () => reject(new Error('Failed to read image.'))
+      reader.onloadend = () => resolve(reader.result as string)
+      reader.readAsDataURL(blob)
+    })
+  } catch (error) {
+    return ''
+  }
+}
