@@ -7,6 +7,8 @@ import { formatDex, getContrastColor, toRgba } from '../../lib/ui'
 import type { PaletteMode, PokemonEntry } from '../../lib/types'
 import { ShinySparkle } from '../shared/ShinySparkle'
 import missingNo from '../../assets/missingno.webp'
+import shareIcon from '../../assets/share-ios.svg'
+import downloadIcon from '../../assets/download.svg'
 
 type HeroPanelProps = {
   entry: PokemonEntry
@@ -152,20 +154,12 @@ export const HeroPanel = ({
           aria-label="Copy share link"
           disabled={!shareUrl}
         >
-          <svg
+          <img
+            src={shareIcon}
+            alt=""
             aria-hidden="true"
-            viewBox="0 0 24 24"
-            className="h-4 w-4"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M12 3v12" />
-            <path d="m8 7 4-4 4 4" />
-            <path d="M5 11v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" />
-          </svg>
+            className="hero-action-icon"
+          />
         </button>
         {onExport ? (
           <button
@@ -175,20 +169,12 @@ export const HeroPanel = ({
             aria-label="Export hero panel"
             disabled={isExporting}
           >
-            <svg
+            <img
+              src={downloadIcon}
+              alt=""
               aria-hidden="true"
-              viewBox="0 0 24 24"
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M12 3v12" />
-              <path d="m7 10 5 5 5-5" />
-              <path d="M4 21h16" />
-            </svg>
+              className="hero-action-icon"
+            />
           </button>
         ) : null}
       </div>

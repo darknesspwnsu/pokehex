@@ -55,10 +55,14 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.hero-action-button svg {
-  stroke: var(--page-ink, #0b0d11);
-  fill: none;
+.hero-action-icon {
+  width: 20px;
+  height: 20px;
   display: block;
+}
+
+:root.dark .hero-action-icon {
+  filter: invert(1);
 }
 
 .hero-action-button:hover:not(:disabled) {
