@@ -38,7 +38,7 @@
   right: 12px;
   display: flex;
   gap: 8px;
-  z-index: 2;
+  z-index: 5;
 }
 
 .hero-action-button {
@@ -48,11 +48,17 @@
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  border: 1px solid var(--page-stroke);
-  background: var(--page-surface-strong);
-  color: var(--page-ink);
+  border: 1px solid var(--page-stroke, rgba(11, 13, 17, 0.2));
+  background: var(--page-surface-strong, rgba(255, 255, 255, 0.72));
+  color: var(--page-ink, #0b0d11);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hero-action-button svg {
+  stroke: currentColor;
+  fill: none;
+  display: block;
 }
 
 .hero-action-button:hover:not(:disabled) {
