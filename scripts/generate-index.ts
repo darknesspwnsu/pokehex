@@ -82,7 +82,7 @@ const loadExistingIndex = async () => {
     const raw = await fs.readFile(OUTPUT_PATH, 'utf8')
     const parsed = JSON.parse(raw) as { entries: PokemonEntry[] }
     return parsed.entries ?? []
-  } catch (error) {
+  } catch {
     return []
   }
 }
@@ -351,7 +351,7 @@ const buildEntry = async (
   } else if (shinyCandidates.length > 0) {
     try {
       shinyResult = await resolvePaletteFromCandidates(shinyCandidates, 'shiny')
-    } catch (error) {
+    } catch {
       shinyResult = normalResult
     }
   }

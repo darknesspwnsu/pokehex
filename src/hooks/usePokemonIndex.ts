@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 
 import type { PokemonEntry, PokemonIndex } from '../lib/types'
 
+const EMPTY_ENTRIES: PokemonEntry[] = []
+
 type UsePokemonIndexResult = {
   index: PokemonIndex | null
   entries: PokemonEntry[]
@@ -48,7 +50,7 @@ export const usePokemonIndex = (): UsePokemonIndexResult => {
     }
   }, [])
 
-  const entries = index?.entries ?? []
+  const entries = index?.entries ?? EMPTY_ENTRIES
   const entryMap = useMemo(() => new Map(entries.map((entry) => [entry.name, entry])), [
     entries,
   ])

@@ -15,7 +15,7 @@ export const useLocalStorage = <T,>(key: string, initial: Initializer<T>) => {
     if (stored) {
       try {
         return JSON.parse(stored) as T
-      } catch (error) {
+      } catch {
         return resolveInitial(initial)
       }
     }

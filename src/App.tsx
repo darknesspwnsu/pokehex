@@ -30,6 +30,7 @@ import {
 } from './lib/ui'
 
 const buildToast = (label: string) => `Copied ${label} to clipboard`
+const SWATCH_SKELETON_KEYS = [0, 1, 2]
 
 function App() {
   const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('pokehex-theme', () => {
@@ -91,7 +92,7 @@ function App() {
     if (img.decode) {
       try {
         await img.decode()
-      } catch (error) {
+      } catch {
         // Ignore decode errors; export can still proceed.
       }
     }
@@ -117,7 +118,7 @@ function App() {
         exportImageCache.current.set(url, dataUrl)
       }
       return dataUrl
-    } catch (error) {
+    } catch {
       return ''
     }
   }, [])
@@ -388,10 +389,10 @@ function App() {
     return `${origin}${normalizedBase}#${slugWithMode}`
   }, [activeEntry, paletteMode])
 
-  const handleCopy = async (label: string, text: string) => {
+  const handleCopy = useCallback(async (label: string, text: string) => {
     const success = await copyToClipboard(text)
     setToast(success ? buildToast(label) : 'Unable to copy to clipboard.')
-  }
+  }, [])
 
   const handleShare = useCallback(
     async (url: string) => {
@@ -420,7 +421,7 @@ function App() {
     setIsExporting(true)
     try {
       const heroUrl = activeEntry.images[paletteMode]
-      const [_, imagePlaceholder] = await Promise.all([
+      const [, imagePlaceholder] = await Promise.all([
         preloadHeroImage(heroUrl),
         getExportImagePlaceholder(heroUrl),
       ])
@@ -470,7 +471,7 @@ function App() {
       link.click()
       window.setTimeout(() => URL.revokeObjectURL(url), 1000)
       setToast('Downloaded hero panel.')
-    } catch (error) {
+    } catch {
       setToast('Unable to export image.')
     } finally {
       setIsExporting(false)
@@ -654,7 +655,7 @@ function App() {
                   <>
                     <div className="hero-panel hero-skeleton skeleton-block" />
                     <div className="swatch-grid swatch-skeleton layout-swatch grid grid-cols-3 gap-0">
-                      {Array.from({ length: 3 }).map((_, index) => (
+                      {SWATCH_SKELETON_KEYS.map((index) => (
                         <div key={`swatch-skeleton-${index}`} className="swatch-skeleton-item skeleton-block" />
                       ))}
                     </div>

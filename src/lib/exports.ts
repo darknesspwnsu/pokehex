@@ -41,7 +41,7 @@ export const toBadgeHtml = (entry: PokemonEntry, mode: PaletteMode) => {
     '<div style="display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:16px;border:1px solid rgba(0,0,0,0.1);box-shadow:0 10px 30px rgba(15,23,42,0.15);font-family:Space Grotesk,Arial,sans-serif;width:360px;background:#ffffff;">',
     `<div style="width:68px;height:68px;border-radius:14px;overflow:hidden;background:#f3f4f6;display:flex;align-items:center;justify-content:center;">${
       imageUrl
-        ? `<img src=\"${imageUrl}\" alt=\"${entry.displayName}\" style=\"width:100%;height:100%;object-fit:contain;\" />`
+        ? `<img src="${imageUrl}" alt="${entry.displayName}" style="width:100%;height:100%;object-fit:contain;" />`
         : '<span style="color:#6b7280;font-size:10px;">No art</span>'
     }</div>`,
     '<div style="flex:1;">',
@@ -50,7 +50,7 @@ export const toBadgeHtml = (entry: PokemonEntry, mode: PaletteMode) => {
     '<div style="display:flex;gap:6px;margin-top:10px;">',
     ...swatches.map(
       (swatch) =>
-        `<span style=\"width:18px;height:18px;border-radius:6px;background:${swatch.hex};display:inline-block;\"></span>`,
+        `<span style="width:18px;height:18px;border-radius:6px;background:${swatch.hex};display:inline-block;"></span>`,
     ),
     '</div>',
     '</div>',

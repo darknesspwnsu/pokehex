@@ -1,73 +1,102 @@
-# React + TypeScript + Vite
+# Poke Hexcolor
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Poke Hexcolor is a React + TypeScript web app that surfaces dominant color palettes from official Pokemon artwork. You can search by name/number or nearest color, filter by type/generation/form, and export palette data in multiple formats.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Search by Pokemon name, species number, or color distance.
+- Toggle normal and shiny palettes.
+- Filter by generation, type, and form tags.
+- View dominant swatches and base stats for each form.
+- Copy exports as HEX list, CSS variables, JSON, or badge HTML.
+- Share direct links via URL hash (`#pokemon-slug` / `#pokemon-slug-shiny`).
+- Export the hero panel as a PNG.
 
-## React Compiler
+## Tech stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19
+- TypeScript 5
+- Vite 7
+- Vitest + Testing Library
+- ESLint 9
 
-## Expanding the ESLint configuration
+## Getting started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Prerequisites:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Node.js 20+
+- npm 10+
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Install dependencies:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm ci
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Start local dev server:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+Build production bundle:
+
+```bash
+npm run build
+```
+
+Preview production build:
+
+```bash
+npm run preview
+```
+
+## Scripts
+
+- `npm run dev`: Start Vite dev server.
+- `npm run build`: Type-check and build for production.
+- `npm run lint`: Run ESLint across the repo.
+- `npm run test`: Run tests once with Vitest.
+- `npm run test:watch`: Run Vitest in watch mode.
+- `npm run generate:index`: Build/update `public/data/pokemon-index.json`.
+
+## Data generation
+
+The app consumes `public/data/pokemon-index.json`. Regenerate it with:
+
+```bash
+npm run generate:index
+```
+
+Optional environment variables for `generate:index`:
+
+- `CONCURRENCY` (default `6`)
+- `LIMIT` (default `0`, meaning no limit)
+- `OFFSET` (default `0`)
+- `SIZE` (default `128`, image resize target for palette extraction)
+- `SWATCHES` (default `3`)
+
+Example:
+
+```bash
+CONCURRENCY=8 LIMIT=151 npm run generate:index
+```
+
+## Project layout
+
+- `src/App.tsx`: Main app orchestration and UI composition.
+- `src/components/`: Hero, side panel, results, swatches, export controls.
+- `src/hooks/`: State, storage, search/filter, index loading, theming.
+- `src/lib/`: Color math, filtering, export formatting, shared types.
+- `scripts/generate-index.ts`: Pokemon index + palette generator.
+- `public/data/pokemon-index.json`: Generated dataset used at runtime.
+
+## CI and deployment
+
+- CI checks (`lint`, `test`, `build`) run in GitHub Actions on pull requests and pushes to `main`.
+- GitHub Pages deployment is handled by `.github/workflows/deploy.yml`.
+- Vite base path is configured for Pages in `vite.config.ts` (`/pokehex/`).
+
+## Attribution
+
+Pokemon data and sprites are sourced from [PokeAPI](https://pokeapi.co/) and the public PokeAPI sprite repository. Pokemon names, artwork, and trademarks belong to their respective owners.

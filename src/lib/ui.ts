@@ -48,7 +48,7 @@ export const copyToClipboard = async (text: string) => {
       await navigator.clipboard.writeText(text)
       return true
     }
-  } catch (error) {
+  } catch {
     // Fall through to legacy copy API.
   }
 
@@ -64,7 +64,7 @@ export const copyToClipboard = async (text: string) => {
     const success = document.execCommand('copy')
     document.body.removeChild(textarea)
     return success
-  } catch (error) {
+  } catch {
     return false
   }
 }
@@ -94,7 +94,7 @@ export const fetchImageDataUrl = async (url: string, init?: RequestInit) => {
       reader.onloadend = () => resolve(reader.result as string)
       reader.readAsDataURL(blob)
     })
-  } catch (error) {
+  } catch {
     return ''
   }
 }
