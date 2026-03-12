@@ -8,7 +8,7 @@ describe('App', () => {
       render(<App />)
       expect(
         await screen.findByRole('heading', {
-          name: /official-art palettes for every pokemon form/i,
+          name: /pokemon hex colors from official art for every form/i,
         }),
       ).toBeInTheDocument()
     },
@@ -16,26 +16,26 @@ describe('App', () => {
   )
 
   it(
-    'updates the hash when selecting a result',
+    'updates the query string when selecting a result',
     async () => {
-    render(<App />)
+      render(<App />)
 
-    await screen.findByRole('heading', {
-      name: /official-art palettes for every pokemon form/i,
-    })
+      await screen.findByRole('heading', {
+        name: /pokemon hex colors from official art for every form/i,
+      })
 
-    await waitFor(() => {
-      expect(document.querySelector('.result-card')).toBeTruthy()
-    })
+      await waitFor(() => {
+        expect(document.querySelector('.result-card')).toBeTruthy()
+      })
 
-    const card = document.querySelector('.result-card') as HTMLButtonElement
-    act(() => {
-      card.click()
-    })
+      const card = document.querySelector('.result-card') as HTMLButtonElement
+      act(() => {
+        card.click()
+      })
 
       await waitFor(
         () => {
-          expect(window.location.hash).toMatch(/^#[a-z0-9-]+/)
+          expect(window.location.search).toMatch(/^\?pokemon=[a-z0-9-]+/)
         },
         { timeout: 10000 },
       )

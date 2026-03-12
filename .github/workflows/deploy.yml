@@ -32,6 +32,8 @@ jobs:
         run: npm ci
       
       - name: Build
+        env:
+          SITE_URL: https://${{ github.repository_owner }}.github.io/pokehex/
         run: npm run build
       
       - name: Setup Pages

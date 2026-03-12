@@ -5,12 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "npm run generate:seo && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "generate:index": "tsx scripts/generate-index.ts"
+    "generate:index": "tsx scripts/generate-index.ts",
+    "generate:seo": "tsx scripts/generate-seo.ts"
   },
   "dependencies": {
     "framer-motion": "^12.33.0",

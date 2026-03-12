@@ -4,21 +4,58 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta
+      name="keywords"
+      content="pokemon hex color, pokemon hexcode, pokemon color palette, hex color finder, shiny pokemon hex color"
+    />
     <meta
       name="description"
-      content="Generate bold, accurate color palettes from official Pokemon artwork."
+      content="Find Pokemon hex color codes from official artwork. Search any Pokemon name and copy HEX palettes for normal or shiny forms."
     />
+    <link rel="canonical" href="/pokehex/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Pokemon Hex Color Finder | Poke Hexcolor" />
+    <meta
+      property="og:description"
+      content="Find Pokemon hex color codes from official artwork. Search any Pokemon name and copy HEX palettes for normal or shiny forms."
+    />
+    <meta property="og:url" content="/pokehex/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Pokemon Hex Color Finder | Poke Hexcolor" />
+    <meta
+      name="twitter:description"
+      content="Find Pokemon hex color codes from official artwork. Search any Pokemon name and copy HEX palettes for normal or shiny forms."
+    />
+    <meta name="theme-color" content="#f97316" />
+    <script id="seo-structured-data" type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Poke Hexcolor",
+        "url": "/pokehex/",
+        "description": "Find Pokemon hex color codes from official artwork.",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "/pokehex/?pokemon={pokemon_slug}",
+          "query-input": "required name=pokemon_slug"
+        }
+      }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <title>Poke Hexcolor</title>
+    <title>Pokemon Hex Color Finder | Poke Hexcolor</title>
   </head>
   <body>
     <div id="root"></div>
     <div id="toast-root"></div>
+    <noscript>
+      Poke Hexcolor helps you find Pokemon hex color palettes from official art. Enable JavaScript to search Pokemon and copy HEX codes.
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

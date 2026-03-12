@@ -31,6 +31,24 @@ import {
 
 const buildToast = (label: string) => `Copied ${label} to clipboard`
 const SWATCH_SKELETON_KEYS = [0, 1, 2]
+const SEO_TITLE_DEFAULT = 'Pokemon Hex Color Finder | Poke Hexcolor'
+const SEO_DESCRIPTION_DEFAULT =
+  'Find Pokemon hex color codes from official artwork. Search any Pokemon name and copy HEX palettes for normal or shiny forms.'
+const SEO_KEYWORDS_DEFAULT =
+  'pokemon hex color, pokemon hex codes, pokemon color palette, pokemon hexcolor, hex color finder'
+const SEO_STRUCTURED_DATA_ID = 'seo-structured-data'
+const SEO_SPOTLIGHT_SLUGS = [
+  'pikachu',
+  'charizard',
+  'bulbasaur',
+  'mewtwo',
+  'eevee',
+  'gengar',
+  'lucario',
+  'greninja',
+  'garchomp',
+  'rayquaza',
+]
 
 function App() {
   const [theme, setTheme] = useLocalStorage<'light' | 'dark'>('pokehex-theme', () => {
@@ -72,7 +90,7 @@ function App() {
   const [hasSeededSelection, setHasSeededSelection] = useState(false)
   const hasRandomizedSelection = useRef(false)
   const skipNextAutoSelect = useRef(false)
-  const urlSync = useRef({ initialized: false, skipNext: false, ignoreHashChange: false })
+  const urlSync = useRef({ skipNext: false })
   const decodedHeroImages = useRef(new Set<string>())
   const exportImageCache = useRef(new Map<string, string>())
 
@@ -123,9 +141,21 @@ function App() {
     }
   }, [])
 
+  const getCurrentQuerySlug = useCallback(() => {
+    if (typeof window === 'undefined') {
+      return null
+    }
+    const value = new URLSearchParams(window.location.search).get('pokemon')
+    return value ? value.toLowerCase().replace(/^\/+|\/+$/g, '') : null
+  }, [])
+
   const getCurrentSlug = useCallback(() => {
     if (typeof window === 'undefined') {
       return null
+    }
+    const querySlug = getCurrentQuerySlug()
+    if (querySlug) {
+      return querySlug
     }
     const hash = window.location.hash
     if (hash.startsWith('#')) {
@@ -140,7 +170,7 @@ function App() {
     }
     const slug = path.replace(/^\/+|\/+$/g, '')
     return slug || null
-  }, [])
+  }, [getCurrentQuerySlug])
 
   const parseSlug = useCallback((raw: string | null) => {
     if (!raw) {
@@ -173,7 +203,6 @@ function App() {
       if (match) {
         skipNextAutoSelect.current = true
         hasRandomizedSelection.current = true
-        urlSync.current.initialized = true
         urlSync.current.skipNext = true
         setSelectedName(match.name)
         setHasSeededSelection(true)
@@ -186,6 +215,7 @@ function App() {
     if (random) {
       skipNextAutoSelect.current = true
       hasRandomizedSelection.current = true
+      urlSync.current.skipNext = true
       setSelectedName(random.name)
       setHasSeededSelection(true)
       setPaletteMode(Math.random() < 0.2 ? 'shiny' : 'normal')
@@ -231,10 +261,6 @@ function App() {
 
   useEffect(() => {
     const handlePopState = () => {
-      if (urlSync.current.ignoreHashChange) {
-        urlSync.current.ignoreHashChange = false
-        return
-      }
       const parsed = parseSlug(getCurrentSlug())
       if (!parsed?.slug) {
         return
@@ -385,9 +411,33 @@ function App() {
     const slugWithMode = paletteMode === 'shiny' ? `${slug}-shiny` : slug
     const base = import.meta.env.BASE_URL ?? '/'
     const normalizedBase = base.endsWith('/') ? base : `${base}/`
-    const origin = typeof window !== 'undefined' ? window.location.origin : ''
-    return `${origin}${normalizedBase}#${slugWithMode}`
+    if (typeof window === 'undefined') {
+      return `${normalizedBase}?pokemon=${encodeURIComponent(slugWithMode)}`
+    }
+    const url = new URL(normalizedBase, window.location.origin)
+    url.searchParams.set('pokemon', slugWithMode)
+    return url.toString()
   }, [activeEntry, paletteMode])
+
+  const seoSpotlightLinks = useMemo(() => {
+    if (entries.length === 0) {
+      return []
+    }
+
+    const base = import.meta.env.BASE_URL ?? '/'
+    const normalizedBase = base.endsWith('/') ? base : `${base}/`
+    return SEO_SPOTLIGHT_SLUGS.map((slug) => {
+      const entry = entrySlugMap.get(slug)
+      if (!entry) {
+        return null
+      }
+      const entrySlug = buildPokemonSlug(entry)
+      return {
+        href: `${normalizedBase}?pokemon=${encodeURIComponent(entrySlug)}`,
+        label: `${entry.displayName} hex color`,
+      }
+    }).filter((link): link is { href: string; label: string } => Boolean(link))
+  }, [entries.length, entrySlugMap])
 
   const handleCopy = useCallback(async (label: string, text: string) => {
     const success = await copyToClipboard(text)
@@ -520,23 +570,122 @@ function App() {
     const slug = buildPokemonSlug(selected)
     const slugWithMode = paletteMode === 'shiny' ? `${slug}-shiny` : slug
     const current = getCurrentSlug()
+    const querySlug = getCurrentQuerySlug()
     if (urlSync.current.skipNext) {
       urlSync.current.skipNext = false
-      if (current === slugWithMode) {
+      if (current === slugWithMode && querySlug === slugWithMode) {
         return
       }
     }
-    if (current === slugWithMode) {
+    if (current === slugWithMode && querySlug === slugWithMode && !window.location.hash) {
       return
     }
 
-    const nextHash = `#${slugWithMode}`
-    if (window.location.hash !== nextHash) {
-      urlSync.current.ignoreHashChange = true
-      window.location.hash = nextHash
+    const nextUrl = new URL(window.location.href)
+    nextUrl.searchParams.set('pokemon', slugWithMode)
+    nextUrl.hash = ''
+    const nextLocation = `${nextUrl.pathname}${nextUrl.search}`
+    const currentLocation = `${window.location.pathname}${window.location.search}${window.location.hash}`
+    if (currentLocation !== nextLocation) {
+      window.history.replaceState(window.history.state, '', nextLocation)
     }
-    urlSync.current.initialized = true
-  }, [entryMap, getCurrentSlug, hasSeededSelection, paletteMode, selectedName])
+  }, [
+    entryMap,
+    getCurrentQuerySlug,
+    getCurrentSlug,
+    hasSeededSelection,
+    paletteMode,
+    selectedName,
+  ])
+
+  useEffect(() => {
+    const setMetaContent = (selector: string, content: string) => {
+      const node = document.querySelector<HTMLMetaElement>(selector)
+      if (node) {
+        node.setAttribute('content', content)
+      }
+    }
+
+    const setStructuredData = (payload: Record<string, unknown>) => {
+      const node = document.getElementById(SEO_STRUCTURED_DATA_ID)
+      if (node) {
+        node.textContent = JSON.stringify(payload)
+      }
+    }
+
+    const base = import.meta.env.BASE_URL ?? '/'
+    const normalizedBase = base.endsWith('/') ? base : `${base}/`
+    const siteUrl = new URL(normalizedBase, window.location.origin).toString()
+    const canonicalUrl = `${window.location.origin}${window.location.pathname}${window.location.search}`
+    const parsed = parseSlug(getCurrentSlug())
+    const currentEntry = parsed?.slug ? entrySlugMap.get(parsed.slug) : null
+    const currentPaletteMode = parsed?.paletteMode ?? 'normal'
+    const canonicalNode = document.querySelector<HTMLLinkElement>('link[rel="canonical"]')
+
+    if (!currentEntry) {
+      document.title = SEO_TITLE_DEFAULT
+      setMetaContent('meta[name="description"]', SEO_DESCRIPTION_DEFAULT)
+      setMetaContent('meta[name="keywords"]', SEO_KEYWORDS_DEFAULT)
+      setMetaContent('meta[property="og:title"]', SEO_TITLE_DEFAULT)
+      setMetaContent('meta[property="og:description"]', SEO_DESCRIPTION_DEFAULT)
+      setMetaContent('meta[property="og:url"]', canonicalUrl)
+      setMetaContent('meta[name="twitter:title"]', SEO_TITLE_DEFAULT)
+      setMetaContent('meta[name="twitter:description"]', SEO_DESCRIPTION_DEFAULT)
+      if (canonicalNode) {
+        canonicalNode.setAttribute('href', canonicalUrl)
+      }
+      setStructuredData({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'Poke Hexcolor',
+        url: siteUrl,
+        description: SEO_DESCRIPTION_DEFAULT,
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: `${siteUrl}?pokemon={pokemon_slug}`,
+          'query-input': 'required name=pokemon_slug',
+        },
+      })
+      return
+    }
+
+    const topHexes = currentEntry.palettes[currentPaletteMode].swatches
+      .slice(0, 3)
+      .map((swatch) => swatch.hex)
+      .join(', ')
+    const modeLabel = currentPaletteMode === 'shiny' ? 'Shiny ' : ''
+    const title = `${currentEntry.displayName} ${modeLabel}Hex Color Palette | Poke Hexcolor`
+    const description = `Get ${currentEntry.displayName} ${modeLabel.toLowerCase()}hex color codes (${topHexes}) from official-art palette extraction.`
+    const keywords = `${currentEntry.displayName.toLowerCase()} hex color, ${currentEntry.displayName.toLowerCase()} color palette, pokemon ${currentEntry.displayName.toLowerCase()} hex`
+
+    document.title = title
+    setMetaContent('meta[name="description"]', description)
+    setMetaContent('meta[name="keywords"]', keywords)
+    setMetaContent('meta[property="og:title"]', title)
+    setMetaContent('meta[property="og:description"]', description)
+    setMetaContent('meta[property="og:url"]', canonicalUrl)
+    setMetaContent('meta[name="twitter:title"]', title)
+    setMetaContent('meta[name="twitter:description"]', description)
+    if (canonicalNode) {
+      canonicalNode.setAttribute('href', canonicalUrl)
+    }
+    setStructuredData({
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: title,
+      url: canonicalUrl,
+      description,
+      isPartOf: {
+        '@type': 'WebSite',
+        name: 'Poke Hexcolor',
+        url: siteUrl,
+      },
+      about: [
+        { '@type': 'Thing', name: `${currentEntry.displayName} Pokemon` },
+        { '@type': 'Thing', name: 'Hex color palette' },
+      ],
+    })
+  }, [entrySlugMap, getCurrentSlug, paletteMode, parseSlug, selectedName])
 
   return (
     <div
@@ -550,21 +699,35 @@ function App() {
 
       <section className="intro-banner mx-auto w-full max-w-7xl space-y-2 px-0">
         <h1 className="intro-title m-0 font-display text-4xl leading-tight text-[var(--page-ink)] sm:text-5xl">
-          Official-art palettes for every Pokemon form.
+          Pokemon hex colors from official art for every form.
         </h1>
         <p className="intro-subtitle max-w-3xl text-sm text-[var(--page-ink-muted)] sm:text-base">
           <span className="intro-subtitle-text">
-            Search by name, number, or nearest color match to reveal dominant swatches. Filter by generation, type, and form, then export clean palette snippets.
+            Search by Pokemon name, number, or nearest color match to reveal accurate hex color codes. Filter by generation, type, and form, then export clean palette snippets.
           </span>
           <span className="intro-tooltip">
             <button type="button" className="intro-tooltip-button" aria-label="About this experience">
               i
             </button>
             <span className="intro-tooltip-text">
-              Search by name, number, or nearest color match to reveal dominant swatches. Filter by generation, type, and form, then export clean palette snippets.
+              Search by Pokemon name, number, or nearest color match to reveal accurate hex color codes. Filter by generation, type, and form, then export clean palette snippets.
             </span>
           </span>
         </p>
+        {seoSpotlightLinks.length > 0 ? (
+          <p className="intro-subtitle max-w-5xl text-xs text-[var(--page-ink-muted)] sm:text-sm">
+            Popular lookups:{' '}
+            {seoSpotlightLinks.map((link, index) => (
+              <span key={link.href}>
+                <a href={link.href} className="underline decoration-dotted underline-offset-4">
+                  {link.label}
+                </a>
+                {index < seoSpotlightLinks.length - 1 ? ', ' : ''}
+              </span>
+            ))}
+            .
+          </p>
+        ) : null}
       </section>
 
       <main className="main-shell app-main flex min-h-0 w-full flex-1 px-0">

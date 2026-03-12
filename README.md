@@ -9,7 +9,7 @@ Poke Hexcolor is a React + TypeScript web app that surfaces dominant color palet
 - Filter by generation, type, and form tags.
 - View dominant swatches and base stats for each form.
 - Copy exports as HEX list, CSS variables, JSON, or badge HTML.
-- Share direct links via URL hash (`#pokemon-slug` / `#pokemon-slug-shiny`).
+- Share direct links via URL query (`?pokemon=pokemon-slug` / `?pokemon=pokemon-slug-shiny`).
 - Export the hero panel as a PNG.
 
 ## Tech stack
@@ -59,6 +59,7 @@ npm run preview
 - `npm run test`: Run tests once with Vitest.
 - `npm run test:watch`: Run Vitest in watch mode.
 - `npm run generate:index`: Build/update `public/data/pokemon-index.json`.
+- `npm run generate:seo`: Build/update `public/sitemap.xml` and `public/robots.txt`.
 
 ## Data generation
 
@@ -82,6 +83,12 @@ Example:
 CONCURRENCY=8 LIMIT=151 npm run generate:index
 ```
 
+Generate SEO crawl files:
+
+```bash
+SITE_URL=https://your-domain.example/pokehex/ npm run generate:seo
+```
+
 ## Project layout
 
 - `src/App.tsx`: Main app orchestration and UI composition.
@@ -89,6 +96,7 @@ CONCURRENCY=8 LIMIT=151 npm run generate:index
 - `src/hooks/`: State, storage, search/filter, index loading, theming.
 - `src/lib/`: Color math, filtering, export formatting, shared types.
 - `scripts/generate-index.ts`: Pokemon index + palette generator.
+- `scripts/generate-seo.ts`: Sitemap + robots generator for GitHub Pages.
 - `public/data/pokemon-index.json`: Generated dataset used at runtime.
 
 ## CI and deployment
